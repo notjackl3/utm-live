@@ -1,0 +1,25 @@
+{% extends 'templates-authentication/index.html' %}
+{% load static %}
+
+{% block content %}
+<form id="login-form">
+    {% csrf_token %}
+    User name: <input name="email"/>
+    <br/>
+    Password: <input name="password" type="password" autocomplete="on"/>
+    <br/>
+    <button type="submit">Login</button>
+</form>
+<a href="{% url 'signup-screen' %}">
+    <button type="button">Sign-up instead</button>
+</a>
+<script>
+document.getElementById("login-form").addEventListener("submit", event => {
+    event.preventDefault();
+    const form = event.target;
+    const email_input = form.email.value;
+    const password_input = form.password.value;
+    LOGIN(email_input, password_input);
+});
+</script>
+{% endblock %}

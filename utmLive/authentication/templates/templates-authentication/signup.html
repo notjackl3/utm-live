@@ -1,0 +1,33 @@
+{% extends 'templates-authentication/index.html' %}
+{% load static %}
+
+{% block content %}
+<form id="signup-form">
+    {% csrf_token %}
+    Email: <input name="email" />
+    <br/>
+    Password: <input name="password" type="password" autocomplete="on"/>
+    <br/>
+    Confirm password: <input name="password2" type="password" autocomplete="on"/>
+    <br/>
+    <button type="submit">Sign-up</button>
+</form>
+<a href="{% url 'login-screen' %}">
+    <button type="button">Login instead</button>
+</a>
+<script>
+document.getElementById("signup-form").addEventListener("submit", event => {
+    event.preventDefault();
+    const form = event.target;
+    const email_input = form.email.value;
+    const password_input = form.password.value;
+    const password2_input = form.password2.value;
+    if (password_input && (password_input === password2_input)) {
+        SIGNUP(email_input, password_input)
+    }
+    else {
+        console.log("Unmatched password.")
+    }
+});
+</script>
+{% endblock %}

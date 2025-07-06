@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTM Live</title>
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <form id="logout-form" action="{% url 'logout_screen' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+    {% endif %}
+    Hello World
+</body>
+</html>
