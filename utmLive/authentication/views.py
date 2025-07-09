@@ -15,10 +15,14 @@ from django.contrib.auth import get_user_model
 
 
 def login_page(request):
+    if request.user.is_authenticated:
+        return redirect('/main')      
     return render(request, "templates-authentication/login.html")
 
 
 def signup_page(request):
+    if request.user.is_authenticated:
+        return redirect('/main')  
     return render(request, "templates-authentication/signup.html")
 
 
@@ -33,9 +37,6 @@ def login_view(request):
         password = body_data.get("password")
         User = get_user_model()
         u = User.objects.get(email=email)
-        
-        print(f"User found: {u.email}, password hash: {u.password}")
-        print("Password correct?", u.check_password(password))
 
         user = authenticate(request, email=email, password=password)
         if not user:
