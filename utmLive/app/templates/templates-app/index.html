@@ -5,97 +5,143 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UTM Live</title>
-    <script src='https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css' rel='stylesheet' />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static "static-app/style.css" %}">  
+
 </head>
 <body>
-    {% if user.is_authenticated %}
-    <form id="logout-form" action="{% url 'logout_screen' %}" method="POST">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
-    {% endif %}
+    <nav class="header">
+        <div class="menu">
+            <a class="menu-item" href="#map">Map</a>
+            <a class="menu-item" href="#spots">Spots</a>
+            {% if user.is_authenticated %}
+            <a class="menu-item" href="#" onclick="document.getElementById("logout-form").submit(); return false;">Logout</a>
+            <form id="logout-form" action="{% url "logout_screen" %}" method="POST" style="display:none;">
+                {% csrf_token %}
+            </form>
+            {% endif %}
+        </div>
+    </nav>
     
+    <div class="map-wrapper">
+        <div id="map" style="width: 100%; height: 100%;"></div>
+        <div class="map-overlay right" id="properties"></div>
+    </div>
+
     <h1>UTM Live</h1>
-    <div id='map' style='width: 100%; height: 500px;'></div>
 
     <script>
     mapboxgl.accessToken = "{{ mapbox_access_token }}";
+    const MAIN_LAYER = "test";
+
     const map = new mapboxgl.Map({
-        style: 'mapbox://styles/mapbox/streets-v12',
-        // style: 'mapbox://styles/mapbox/light-v11',
+        style: "mapbox://styles/notjackl3/cmcvhl1fn00oi01sb8fzl25md?optimize=true",
         center: [-79.661979, 43.548187],
         zoom: 16.5,
-        pitch: 45,
-        bearing: -17.6,
-        container: 'map',
-        antialias: true
+        minZoom: 14.5,
+        maxZoom: 19,
+        pitch: 55,
+        bearing: 20,
+        container: "map",
+        antialias: true,
     });
 
-    map.on('style.load', () => {
-        // Insert the layer beneath any symbol layer.
-        const layers = map.getStyle().layers;
-        const labelLayerId = layers.find(
-            (layer) => layer.type === 'symbol' && layer.layout['text-field']
-        ).id;
+    const card = document.getElementById("properties");
+    const showCard = (feature) => {
+        card.innerHTML = `
+            <div class="map-overlay-inner">
+                <code>${feature.properties.name}</code><hr>
+                ${Object.entries(feature.properties)
+                    .map(([key, value]) => `<li><b>${key}</b>: ${value}</li>`)
+                    .join("")}
+            </div>`;
 
-        // The 'building' layer in the Mapbox Streets
-        // vector tileset contains building height data
-        // from OpenStreetMap.
-        map.addLayer(
-            {
-                'id': 'add-3d-buildings',
-                'source': 'composite',
-                'source-layer': 'building',
-                'filter': ['==', 'extrude', 'true'],
-                'type': 'fill-extrusion',
-                'minzoom': 15,
-                'paint': {
-                    'fill-extrusion-color': '#fff',
-                    'fill-extrusion-height': [
-                        'interpolate',
-                        ['linear'],
-                        ['zoom'],
-                        15,
-                        0,
-                        15.05,
-                        ['get', 'height']
-                    ],
-                    'fill-extrusion-base': [
-                        'interpolate',
-                        ['linear'],
-                        ['zoom'],
-                        15,
-                        0,
-                        15.05,
-                        ['get', 'min_height']
-                    ],
-                    'fill-extrusion-opacity': 0.8
+        card.style.display = "block";
+    };
+
+    map.on("style.load", () => {
+        let selectedFeature = null;
+
+        map.addSource("mapbox-dem", {
+            "type": "raster-dem",
+            "url": "mapbox://mapbox.mapbox-terrain-dem-v1",
+            "tileSize": 512,
+        });
+
+        map.setLayoutProperty(MAIN_LAYER, "visibility", "visible");
+        map.setLayoutProperty(MAIN_LAYER, "icon-allow-overlap", true);
+        map.setLayoutProperty(MAIN_LAYER, "text-allow-overlap", true);
+        map.setPaintProperty(MAIN_LAYER, "icon-occlusion-opacity", 1);
+        map.setPaintProperty(MAIN_LAYER, "text-occlusion-opacity", 1);
+
+        map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
+
+        map.addInteraction("click", {
+            type: "click",
+            target: { layerId: MAIN_LAYER },
+            handler: async ({ feature }) => {
+                if (selectedFeature) {
+                    map.setFeatureState(selectedFeature, { selected: false });
                 }
-            },
-            labelLayerId
-        );
+                selectedFeature = feature;
+                map.setFeatureState(feature, { selected: true });
+                await showCard(feature);
+                map.resize();
+                map.flyTo({
+                    center: feature.geometry.coordinates
+                });
+            }
+        });
+
+        map.on("mouseenter", MAIN_LAYER, () => {
+            map.getCanvas().style.cursor = "pointer";
+        });
+        map.on("mouseleave", MAIN_LAYER, () => {
+            map.getCanvas().style.cursor = "";
+        });
     });
-
-
-    {% for address in addresses %}
-    var lng  = {{ address.long }}
-    var lat = {{ address.lat }}
-    var color = "#fff"
-    var marker = new mapboxgl.Marker({
-        color: "#ff0000",
-    }).setLngLat([lng, lat])
-        .setPopup(new mapboxgl.Popup().setHTML(`<p>{{ address.address }} ${lng} : ${lat}</p>`))
-        .addTo(map)
-    marker._color = color;
-    {% endfor %}
-
-    // fly to davis building
+    
     map.flyTo({
         center: [-79.661979, 43.548187],
         essential: false
     });
-    
+
+
+    // map.on("style.load", () => {   
+    //     map.on("click", MAIN_LAYER, (e) => {
+    //     const feature = e.features[0];
+
+    //     const infoPanel = document.getElementById("info-panel");
+    //     const props = feature.properties;
+    //     // console.log(props);
+
+    //     // Build the content
+    //     let html = `<h3>${props.name}</h3><ul>`;
+    //     for (const key in props) {
+    //         html += `<li><b>${key}</b>: ${props[key]}</li>`;
+    //     }
+    //     html += `</ul>`;
+
+    //     infoPanel.innerHTML = html;
+    //     infoPanel.style.display = "block";
+    //     }); 
+    // });
+
+
+    // {% for address in addresses %}
+    // var lng  = {{ address.long }}
+    // var lat = {{ address.lat }}
+    // var color = "#fff"
+    // var marker = new mapboxgl.Marker({
+    //     color: "#ff0000",
+    // }).setLngLat([lng, lat])
+    //     .setPopup(new mapboxgl.Popup().setHTML(`<p>{{ address.address }} ${lng} : ${lat}</p>`))
+    //     .addTo(map)
+    // marker._color = color;
+    // {% endfor %}
+
+    // fly to davis building
     </script>
 </body>
 </html>
