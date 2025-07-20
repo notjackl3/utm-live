@@ -33,9 +33,10 @@ function showCard(feature) {
     locationName.className = "location-name";
     container.appendChild(locationName);
 
+    var locationFile = "";
     const list = document.createElement("ul");
     for (const [key, value] of Object.entries(feature.properties)) {            
-        if (key != "name") {
+        if (key != "name" && key != "code") {
             const locationKey = document.createElement("p");
             locationKey.className = "location-key";
             locationKey.innerHTML = `<b>${key}</b>`;
@@ -50,19 +51,24 @@ function showCard(feature) {
             locationInfo.appendChild(locationValue);
             container.appendChild(locationInfo);
         }
+        if (key == "code") {
+            locationFile = `${value}.jpg`.toLowerCase(); 
+        }
     }
     container.appendChild(list);
     card.appendChild(container);
 
     const locationImage = document.createElement("img");
-    locationImage.src = getImagePath('outside-dv.jpeg');
+    locationImage.src = getImagePath(`outside-${locationFile}`);
     locationImage.className = "location-image";
     card.appendChild(locationImage);
 
     const locationImage2 = document.createElement("img");
-    locationImage2.src = getImagePath('inside-dv.jpeg');
+    locationImage2.src = getImagePath(`inside-${locationFile}`);
     locationImage2.className = "location-image";
-    card.appendChild(locationImage2);
+    locationImage2.onload = () => {
+        card.appendChild(locationImage2);
+    };
 
     card.style.display = "block";
 };
@@ -137,4 +143,4 @@ function geoFindMe() {
     navigator.geolocation.getCurrentPosition(success);
 }
 
-document.querySelector("#my-location").addEventListener("click", geoFindMe);
+document.querySelector("#my-location-button").addEventListener("click", geoFindMe);
