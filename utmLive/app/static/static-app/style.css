@@ -169,27 +169,16 @@ h1 {
     margin-top: 30px;
 }
 
-#my-location-button {
+.base-button {
     border: none;
     padding: 0.7em 1em;
+    margin: 0 0.2em;
     border-radius: 1em;
     background-color: var(--secondary-color);
     color: white;
 }
 
-#my-location-button:hover {
-    transform: scale(1.1);
-}
-
-.close-button {
-    border: none;
-    padding: 0.7em 1em;
-    border-radius: 1em;
-    background-color: var(--secondary-color);
-    color: white;
-}
-
-.close-button:hover {
+.base-button:hover {
     transform: scale(1.1);
 }
 

@@ -17,16 +17,23 @@ function showCard(feature) {
     container.className = "map-overlay-inner";
 
     const closeButton = document.createElement("button");
-    closeButton.className = "close-button";
+    closeButton.classList.add("base-button", "close-button");
     closeButton.innerHTML = "close";
     closeButton.addEventListener("click", hideCard);
 
-    const closeButtonWrapper = document.createElement("div");
-    closeButtonWrapper.style.display = "flex";
-    closeButtonWrapper.style.justifyContent = "end";
-    closeButtonWrapper.appendChild(closeButton)
+    const favButton = document.createElement("button");
+    favButton.classList.add("base-button", "fav-button");
+    favButton.innerHTML = "add to favourites";
+    favButton.addEventListener("click", () => {
+        addToFav(feature.properties.code);
+    });
 
-    container.appendChild(closeButtonWrapper);
+    const buttonWrapper = document.createElement("div");
+    buttonWrapper.style.display = "flex";
+    buttonWrapper.style.justifyContent = "end";
+    buttonWrapper.appendChild(favButton)
+    buttonWrapper.appendChild(closeButton)
+    container.appendChild(buttonWrapper);
 
     const locationName = document.createElement("h1");
     locationName.textContent = feature.properties.name;
@@ -35,33 +42,35 @@ function showCard(feature) {
 
     var locationFile = "";
     const list = document.createElement("ul");
-    for (const [key, value] of Object.entries(feature.properties)) {            
-        if (key != "name" && key != "code") {
-            const locationKey = document.createElement("p");
-            locationKey.className = "location-key";
-            locationKey.innerHTML = `<b>${key}</b>`;
-            
-            const locationValue = document.createElement("p");
-            locationValue.className = "location-value";
-            locationValue.innerText = value;
-            
-            const locationInfo = document.createElement("div");
-            locationInfo.className = "location-info";
-            locationInfo.appendChild(locationKey);
-            locationInfo.appendChild(locationValue);
-            container.appendChild(locationInfo);
-        }
-        if (key == "code") {
-            locationFile = `${value}.jpg`.toLowerCase(); 
-        }
+
+    function createFeature(key, value) {
+        const locationKey = document.createElement("p");
+        locationKey.className = "location-key";
+        locationKey.innerHTML = `<b>${key}</b>`;
+        
+        const locationValue = document.createElement("p");
+        locationValue.className = "location-value";
+        locationValue.innerText = value;
+        
+        const locationInfo = document.createElement("div");
+        locationInfo.className = "location-info";
+        locationInfo.appendChild(locationKey);
+        locationInfo.appendChild(locationValue);
+        container.appendChild(locationInfo);
     }
+
+    createFeature("name", feature.properties.name)
+    createFeature("tags", feature.properties.tags)
+    locationFile = `${feature.properties.code}.jpg`.toLowerCase(); 
     container.appendChild(list);
     card.appendChild(container);
 
     const locationImage = document.createElement("img");
     locationImage.src = getImagePath(`outside-${locationFile}`);
     locationImage.className = "location-image";
-    card.appendChild(locationImage);
+    locationImage.onload = () => {
+        card.appendChild(locationImage);
+    };
 
     const locationImage2 = document.createElement("img");
     locationImage2.src = getImagePath(`inside-${locationFile}`);
@@ -80,18 +89,17 @@ function hideCard() {
 map.on("style.load", () => {
     let selectedFeature = null;
 
-    map.addSource("mapbox-dem", {
-        "type": "raster-dem",
-        "url": "mapbox://mapbox.mapbox-terrain-dem-v1",
-        "tileSize": 512,
-    });
-
     map.setLayoutProperty(MAIN_LAYER, "visibility", "visible");
     map.setLayoutProperty(MAIN_LAYER, "icon-allow-overlap", true);
     map.setLayoutProperty(MAIN_LAYER, "text-allow-overlap", true);
     map.setPaintProperty(MAIN_LAYER, "icon-occlusion-opacity", 1);
     map.setPaintProperty(MAIN_LAYER, "text-occlusion-opacity", 1);
 
+    map.addSource("mapbox-dem", {
+        "type": "raster-dem",
+        "url": "mapbox://mapbox.mapbox-terrain-dem-v1",
+        "tileSize": 512,
+    });
     map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
 
     map.addInteraction("click", {

@@ -61,12 +61,16 @@ function showCard(feature) {
     const locationImage = document.createElement("img");
     locationImage.src = getImagePath(`outside-${locationFile}`);
     locationImage.className = "location-image";
-    card.appendChild(locationImage);
+    locationImage.onload = () => {
+        card.appendChild(locationImage);
+    };
 
     const locationImage2 = document.createElement("img");
     locationImage2.src = getImagePath(`inside-${locationFile}`);
     locationImage2.className = "location-image";
-    card.appendChild(locationImage2);
+    locationImage2.onload = () => {
+        card.appendChild(locationImage2);
+    };
 
     card.style.display = "block";
 };
@@ -78,18 +82,17 @@ function hideCard() {
 map.on("style.load", () => {
     let selectedFeature = null;
 
-    map.addSource("mapbox-dem", {
-        "type": "raster-dem",
-        "url": "mapbox://mapbox.mapbox-terrain-dem-v1",
-        "tileSize": 512,
-    });
-
     map.setLayoutProperty(MAIN_LAYER, "visibility", "visible");
     map.setLayoutProperty(MAIN_LAYER, "icon-allow-overlap", true);
     map.setLayoutProperty(MAIN_LAYER, "text-allow-overlap", true);
     map.setPaintProperty(MAIN_LAYER, "icon-occlusion-opacity", 1);
     map.setPaintProperty(MAIN_LAYER, "text-occlusion-opacity", 1);
 
+    map.addSource("mapbox-dem", {
+        "type": "raster-dem",
+        "url": "mapbox://mapbox.mapbox-terrain-dem-v1",
+        "tileSize": 512,
+    });
     map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
 
     map.addInteraction("click", {

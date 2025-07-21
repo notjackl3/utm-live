@@ -4,3 +4,6 @@ markdown
 django-filter
 djangorestframework-simplejwt
 geocoder
+mapbox-tilesets
+dotenv
+psycopg

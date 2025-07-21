@@ -10,3 +10,7 @@ function isInOntario(center) {
 function getImagePath(name) {
     return `${BASE_ASSETS_URL}${name}`;
 }
+
+function addToFav(code) {
+    // add location with code to favourites
+}

@@ -157,6 +157,7 @@ h1 {
 
 .location-image {
     width: 100%;
+    height: auto;
     margin-top: 1rem;
     padding: 0 1rem;
 }
