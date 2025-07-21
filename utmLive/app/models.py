@@ -17,10 +17,18 @@ class Address(models.Model):
         return super(Address, self).save(*args, *kwargs)
     
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Locations(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
+    tags = models.ManyToManyField(Tag, related_name='locations')
 
     def __str__(self):
         return f"{self.name} ({self.code})"
@@ -33,4 +41,3 @@ class Preferences(models.Model):
 
     class Meta:
         unique_together = ('user', 'code') 
-
