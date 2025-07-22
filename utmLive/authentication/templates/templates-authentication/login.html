@@ -2,17 +2,24 @@
 {% load static %}
 
 {% block content %}
-<form id="login-form">
-    {% csrf_token %}
-    User name: <input name="email"/>
-    <br/>
-    Password: <input name="password" type="password" autocomplete="on"/>
-    <br/>
-    <button type="submit">Login</button>
-</form>
-<a href="{% url 'signup-screen' %}">
-    <button type="button">Sign-up instead</button>
-</a>
+<div class="main-container">
+    <form id="login-form">
+        {% csrf_token %}
+        <div class="input-group">
+            <label for="email">User name:</label>
+            <input name="email" id="email" placeholder="Enter your email" />
+        </div>
+        <div class="input-group">
+            <label for="password">Password:</label>
+            <input name="password" type="password" id="password" placeholder="Enter your password" autocomplete="on" />
+        </div>
+        <p id="error-message" style="display: none">Invalid login details</p>
+        <button type="submit">Login</button>
+    </form>
+    <a href="{% url 'signup-screen' %}">
+        <button type="button" class="btn">Sign-up instead</button>
+    </a>
+</div>
 <script>
 document.getElementById("login-form").addEventListener("submit", event => {
     event.preventDefault();

@@ -35,8 +35,8 @@ def login_view(request):
         body_data = json.loads(body_unicode)
         email = body_data.get("email")
         password = body_data.get("password")
-        User = get_user_model()
-        u = User.objects.get(email=email)
+        # User = get_user_model()
+        # u = User.objects.get(email=email)
 
         user = authenticate(request, email=email, password=password)
         if not user:

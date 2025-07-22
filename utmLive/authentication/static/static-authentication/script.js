@@ -12,7 +12,10 @@ function getCookie(name) {
   }
   return cookieValue;
 }
-
+function showErrorMessage() {
+    errorMessage = document.getElementById("error-message");
+    errorMessage.style.display = "block";
+}
 
 async function LOGIN(email_input, password_input) {
   try {
@@ -37,6 +40,7 @@ async function LOGIN(email_input, password_input) {
       window.location.href = "/main";
   } catch (error) {
       console.error("Error:", error);
+      showErrorMessage();
   }
 }
 

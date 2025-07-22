@@ -2,19 +2,28 @@
 {% load static %}
 
 {% block content %}
-<form id="signup-form">
-    {% csrf_token %}
-    Email: <input name="email" />
-    <br/>
-    Password: <input name="password" type="password" autocomplete="on"/>
-    <br/>
-    Confirm password: <input name="password2" type="password" autocomplete="on"/>
-    <br/>
-    <button type="submit">Sign-up</button>
-</form>
-<a href="{% url 'login-screen' %}">
-    <button type="button">Login instead</button>
-</a>
+<div class="main-container">
+    <form id="signup-form">
+        {% csrf_token %}
+        <div class="input-group">
+            <label for="email">User name:</label>
+            <input name="email" id="email" placeholder="Enter your email" />
+        </div>
+        <div class="input-group">
+            <label for="password">Password:</label>
+            <input name="password" type="password" id="password" placeholder="Enter your password" autocomplete="on" />
+        </div>
+        <div class="input-group">
+            <label for="password">Repeat Password:</label>
+            <input name="password2" type="password" id="password2" placeholder="Repeat your password" autocomplete="on" />
+        </div>
+        <p id="error-message" style="display: none">Invalid sign-up details</p>
+        <button type="submit">Sign-up</button>
+    </form>
+    <a href="{% url 'login-screen' %}">
+        <button type="button" class="btn">Login instead</button>
+    </a>
+</div>
 <script>
 document.getElementById("signup-form").addEventListener("submit", event => {
     event.preventDefault();
@@ -27,6 +36,7 @@ document.getElementById("signup-form").addEventListener("submit", event => {
     }
     else {
         console.log("Unmatched password.")
+        showErrorMessage();
     }
 });
 </script>
