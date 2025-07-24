@@ -25,18 +25,27 @@
     </a>
 </div>
 <script>
+function validatePassword(password) {
+    const passwordRegex = /^(?=.*[a-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+-]{8,}$/;
+    return passwordRegex.test(password);
+}
+
 document.getElementById("signup-form").addEventListener("submit", event => {
     event.preventDefault();
     const form = event.target;
     const email_input = form.email.value;
     const password_input = form.password.value;
     const password2_input = form.password2.value;
-    if (password_input && (password_input === password2_input)) {
-        SIGNUP(email_input, password_input)
+    if ((password_input === password2_input)) {
+        if (validatePassword(password_input)) {
+            SIGNUP(email_input, password_input)
+        }
+        else {
+            showErrorMessage("Password needs to have minimum 8 characters, at least one letter, and one digit.");
+        }
     }
     else {
-        console.log("Unmatched password.")
-        showErrorMessage();
+        showErrorMessage("Passwords do not match.");
     }
 });
 </script>

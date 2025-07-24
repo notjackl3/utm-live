@@ -1,7 +1,8 @@
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from .views import AddressView
+from . import views
 
 urlpatterns = [
-    path("", AddressView.as_view(), name="main"),
+    path("", views.AddressView.as_view(), name="main"),
+    path("preferences/", views.Preference.as_view(), name="preferences"),
 ]

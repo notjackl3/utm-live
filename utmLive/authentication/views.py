@@ -1,15 +1,14 @@
 import json
-from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
-from rest_framework import generics, permissions, status
+from rest_framework import status
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer
-from rest_framework import serializers
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 
@@ -35,8 +34,6 @@ def login_view(request):
         body_data = json.loads(body_unicode)
         email = body_data.get("email")
         password = body_data.get("password")
-        # User = get_user_model()
-        # u = User.objects.get(email=email)
 
         user = authenticate(request, email=email, password=password)
         if not user:
@@ -58,7 +55,9 @@ class UserAPI(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+
             login(request, user) 
+            
             refresh = RefreshToken.for_user(user)
             return Response({
                 'user': UserSerializer(user).data,

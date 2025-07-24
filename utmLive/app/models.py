@@ -24,7 +24,7 @@ class Tag(models.Model):
         return self.name
 
 
-class Locations(models.Model):
+class Location(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
@@ -34,10 +34,10 @@ class Locations(models.Model):
         return f"{self.name} ({self.code})"
     
 
-class Preferences(models.Model):
+class Preference(models.Model):
     # use settings.AUTH_USER_MODEL because it sets to whatever the new user model is
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="preferences")
-    code = models.ForeignKey(Locations, on_delete=models.CASCADE, related_name="preferred_by")
+    code = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="preferred_by")
 
     class Meta:
         unique_together = ('user', 'code') 

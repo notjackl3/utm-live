@@ -12,18 +12,22 @@ function getCookie(name) {
   }
   return cookieValue;
 }
-function showErrorMessage() {
+
+
+function showErrorMessage(message) {
     errorMessage = document.getElementById("error-message");
+    errorMessage.innerHTML = message;
     errorMessage.style.display = "block";
 }
+
 
 async function LOGIN(email_input, password_input) {
   try {
       const response = await fetch("/login-user/", {
           method: "POST",
           headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrftoken"),
           },
           credentials: "include",
           body: JSON.stringify({
@@ -33,14 +37,14 @@ async function LOGIN(email_input, password_input) {
       })
       if (!response.ok) throw new Error("Failed to login.");
       data = await response.json()
-      localStorage.setItem("access", data.access);
-      localStorage.setItem("refresh", data.refresh);
+      localStorage.setItem("access_token", data.access);
+      localStorage.setItem("refresh_token", data.refresh);
       console.log("Access token:", data.access);
       console.log("Refresh token:", data.refresh);
       window.location.href = "/main";
   } catch (error) {
       console.error("Error:", error);
-      showErrorMessage();
+      showErrorMessage("Login details are incorrect.");
   }
 }
 
@@ -61,12 +65,14 @@ async function SIGNUP(email_input, password_input) {
       })
       if (!response.ok) throw new Error("Failed to signup.");
       data = await response.json()
-      localStorage.setItem("access", data.access);
-      localStorage.setItem("refresh", data.refresh);
+      localStorage.setItem("access_token", data.access);
+      localStorage.setItem("refresh_token", data.refresh);
       console.log("Access token:", data.access);
       console.log("Refresh token:", data.refresh);
       window.location.href = "/main";
   } catch (error) {
-      console.error("Error:", error);
+      showErrorMessage("Email is not valid or it already existed.");
   }
 }
+
+

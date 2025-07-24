@@ -1,6 +1,8 @@
 from django.shortcuts import render
+from .serializers import PreferenceSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -23,8 +25,13 @@ class AddressView(LoginRequiredMixin, CreateView):
         context["addresses"] = Address.objects.all()
         return context
 
-class MainView(APIView):
+class Preference(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        return Response({"message": f"Welcome, {request.user.email}!"})
+    def post(self, request):
+        user = request.user 
+        serializer = PreferenceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
