@@ -24,13 +24,13 @@ All location metadata and spatial relationships are stored in a `postgresql` dat
 - Make models and datasets for all locations within the campus.
 - Define new user model with Django authentication system.
 
-![alt text](image.png)
+![alt text](demo-images/image.png)
 
-![alt text](image-3.png)
+![alt text](demo-images/image-3.png)
 
-![alt text](image-4.png)
+![alt text](demo-images/image-4.png)
 
-![alt text](image-1.png)
+![alt text](demo-images/image-1.png)
 
-![alt text](image-2.png)
+![alt text](demo-images/image-2.png)
 
