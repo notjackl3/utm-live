@@ -16,7 +16,7 @@ This Django full-stack app is an interactive `3D map` of the `UTM campus`, highl
 
 The application is built using Django’s `model-view-template` (MVT) architecture to manage both frontend rendering and backend logic. The interactive map is fully custom-built using `mapbox gl js` and `mapbox studio`, integrating custom `geojson` schemas and `vector tilesets` to visualize campus locations such as study areas, dining spots, and buildings. 
 
-All location metadata and spatial relationships are stored in a `postgresql` database hosted on `supabase`, allowing efficient querying and future scalability.User authentication is implemented using Django’s built-in `auth system` with a custom user model.
+All location metadata and spatial relationships are stored in a `postgresql` database hosted on `supabase`, allowing efficient querying and future scalability.User authentication is implemented using Django’s built-in `auth system` with a custom user model and `JWT` tokens for apis.
 
 ## What I Learned Through This Project:
 
@@ -24,4 +24,13 @@ All location metadata and spatial relationships are stored in a `postgresql` dat
 - Make models and datasets for all locations within the campus.
 - Define new user model with Django authentication system.
 
+![alt text](image.png)
+
+![alt text](<Screenshot 2025-07-23 at 10.42.24.png>)
+
+![alt text](<Screenshot 2025-07-23 at 10.42.44.png>)
+
+![alt text](image-1.png)
+
+![alt text](image-2.png)
 
