@@ -26,9 +26,9 @@ All location metadata and spatial relationships are stored in a `postgresql` dat
 
 ![alt text](image.png)
 
-![alt text](<Screenshot 2025-07-23 at 10.42.24.png>)
+![alt text](image-3.png)
 
-![alt text](<Screenshot 2025-07-23 at 10.42.44.png>)
+![alt text](image-4.png)
 
 ![alt text](image-1.png)
 
