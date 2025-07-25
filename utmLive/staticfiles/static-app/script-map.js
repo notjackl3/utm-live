@@ -1,15 +1,3 @@
-const map = new mapboxgl.Map({
-    style: "mapbox://styles/notjackl3/cmcvhl1fn00oi01sb8fzl25md?optimize=true",
-    center: [-79.661979, 43.548187],
-    zoom: 16.5,
-    minZoom: 14.5,
-    maxZoom: 19,
-    pitch: 55,
-    bearing: 20,
-    container: "map",
-    antialias: true,
-});
-
 const card = document.getElementById("properties");
 function showCard(feature) {
     card.innerHTML = "";
@@ -17,16 +5,23 @@ function showCard(feature) {
     container.className = "map-overlay-inner";
 
     const closeButton = document.createElement("button");
-    closeButton.className = "close-button";
+    closeButton.classList.add("base-button", "close-button");
     closeButton.innerHTML = "close";
     closeButton.addEventListener("click", hideCard);
 
-    const closeButtonWrapper = document.createElement("div");
-    closeButtonWrapper.style.display = "flex";
-    closeButtonWrapper.style.justifyContent = "end";
-    closeButtonWrapper.appendChild(closeButton)
+    const favButton = document.createElement("button");
+    favButton.classList.add("base-button", "fav-button");
+    favButton.innerHTML = "add to favourites";
+    favButton.addEventListener("click", () => {
+        addToFav(feature.properties.code);
+    });
 
-    container.appendChild(closeButtonWrapper);
+    const buttonWrapper = document.createElement("div");
+    buttonWrapper.style.display = "flex";
+    buttonWrapper.style.justifyContent = "end";
+    buttonWrapper.appendChild(favButton)
+    buttonWrapper.appendChild(closeButton)
+    container.appendChild(buttonWrapper);
 
     const locationName = document.createElement("h1");
     locationName.textContent = feature.properties.name;
@@ -35,26 +30,26 @@ function showCard(feature) {
 
     var locationFile = "";
     const list = document.createElement("ul");
-    for (const [key, value] of Object.entries(feature.properties)) {            
-        if (key != "name" && key != "code") {
-            const locationKey = document.createElement("p");
-            locationKey.className = "location-key";
-            locationKey.innerHTML = `<b>${key}</b>`;
-            
-            const locationValue = document.createElement("p");
-            locationValue.className = "location-value";
-            locationValue.innerText = value;
-            
-            const locationInfo = document.createElement("div");
-            locationInfo.className = "location-info";
-            locationInfo.appendChild(locationKey);
-            locationInfo.appendChild(locationValue);
-            container.appendChild(locationInfo);
-        }
-        if (key == "code") {
-            locationFile = `${value}.jpg`.toLowerCase(); 
-        }
+
+    function createFeature(key, value) {
+        const locationKey = document.createElement("p");
+        locationKey.className = "location-key";
+        locationKey.innerHTML = `<b>${key}</b>`;
+        
+        const locationValue = document.createElement("p");
+        locationValue.className = "location-value";
+        locationValue.innerText = value;
+        
+        const locationInfo = document.createElement("div");
+        locationInfo.className = "location-info";
+        locationInfo.appendChild(locationKey);
+        locationInfo.appendChild(locationValue);
+        container.appendChild(locationInfo);
     }
+
+    createFeature("name", feature.properties.name)
+    createFeature("tags", feature.properties.tags)
+    locationFile = `${feature.properties.code}.jpg`.toLowerCase(); 
     container.appendChild(list);
     card.appendChild(container);
 
@@ -79,21 +74,107 @@ function hideCard() {
     map.resize();
 }
 
+const map = new mapboxgl.Map({
+    style: 'mapbox://styles/mapbox/standard',
+    center: [-79.661979, 43.548187],
+    zoom: 16.5,
+    minZoom: 14.5,
+    maxZoom: 19,
+    pitch: 55,
+    bearing: 20,
+    container: "map",
+    antialias: true,
+});
+
 map.on("style.load", () => {
     let selectedFeature = null;
+
+    if (!map.getSource("locations-source")) {
+        map.addSource("locations-source", {
+            type: "vector",
+            url: "mapbox://notjackl3.cmcvdx7l205vy1ppgk03k5ks9-9m35t"
+        });
+    }
+
+    map.loadImage(
+        '/static/static-app/assets/location.svg',
+        (error, image) => {
+            if (error) throw error;
+
+            // Add the image to the map style.
+            map.addImage('cat', image);
+
+            // Add a data source containing one point feature.
+            map.addSource('point', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'FeatureCollection',
+                    'features': [
+                        {
+                            'type': 'Feature',
+                            'geometry': {
+                                'type': 'Point',
+                                'coordinates': [-77.4144, 25.0759]
+                            }
+                        }
+                    ]
+                }
+            });
+
+            // Add a layer to use the image to represent the data.
+            map.addLayer({
+                'id': 'points',
+                'type': 'symbol',
+                'source': 'point', // reference the data source
+                'layout': {
+                    'icon-image': 'cat', // reference the image
+                    'icon-size': 0.25
+                }
+            });
+        }
+    );
+
+
+    if (!map.getLayer(MAIN_LAYER)) {
+        map.addLayer({
+            id: MAIN_LAYER,
+            type: 'symbol',
+            source: 'locations-source',
+            'source-layer': 'test',
+            layout: {
+            'icon-image': 'location-icon',  
+            'icon-size': 0.5,
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true
+            },
+            paint: {
+            'icon-color': [
+                'match',
+                ['get', 'type'],
+                'academic building', '#e74c3c',  // red
+                'campus building', '#27ae60',    // green
+                'student building', '#2980b9',   // blue
+                '#888888'                        // fallback grey
+            ]
+            }
+        });
+        }
+
+    if (!map.getSource("mapbox-dem")) {
+        map.addSource("mapbox-dem", {
+            type: "raster-dem",
+            url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+            tileSize: 512
+        });
+    }
+    
+    map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
 
     map.setLayoutProperty(MAIN_LAYER, "visibility", "visible");
     map.setLayoutProperty(MAIN_LAYER, "icon-allow-overlap", true);
     map.setLayoutProperty(MAIN_LAYER, "text-allow-overlap", true);
     map.setPaintProperty(MAIN_LAYER, "icon-occlusion-opacity", 1);
     map.setPaintProperty(MAIN_LAYER, "text-occlusion-opacity", 1);
-
-    map.addSource("mapbox-dem", {
-        "type": "raster-dem",
-        "url": "mapbox://mapbox.mapbox-terrain-dem-v1",
-        "tileSize": 512,
-    });
-    map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
 
     map.addInteraction("click", {
         type: "click",

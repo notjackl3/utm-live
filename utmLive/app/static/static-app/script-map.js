@@ -1,15 +1,3 @@
-const map = new mapboxgl.Map({
-    style: "mapbox://styles/notjackl3/cmcvhl1fn00oi01sb8fzl25md?optimize=true",
-    center: [-79.661979, 43.548187],
-    zoom: 16.5,
-    minZoom: 14.5,
-    maxZoom: 19,
-    pitch: 55,
-    bearing: 20,
-    container: "map",
-    antialias: true,
-});
-
 const card = document.getElementById("properties");
 function showCard(feature) {
     card.innerHTML = "";
@@ -86,28 +74,90 @@ function hideCard() {
     map.resize();
 }
 
+const map = new mapboxgl.Map({
+    style: 'mapbox://styles/mapbox/standard',
+    center: [-79.661979, 43.548187],
+    zoom: 16.5,
+    minZoom: 14.5,
+    maxZoom: 19,
+    pitch: 55,
+    bearing: 20,
+    container: "map",
+    antialias: true,
+});
+
 map.on("style.load", () => {
     let selectedFeature = null;
+
+    if (!map.getSource("locations-source")) {
+        map.addSource("locations-source", {
+            type: "vector",
+            url: "mapbox://notjackl3.cmcvdx7l205vy1ppgk03k5ks9-9m35t"
+        });
+    }
+
+    map.loadImage(
+        '/static/static-app/assets/location.png',
+        (error, image) => {
+            if (error) throw error;
+            map.addImage('location-icon', image, { sdf: true });
+            
+            if (!map.getLayer(MAIN_LAYER)) {
+                map.addLayer({
+                    id: MAIN_LAYER,
+                    type: 'symbol',
+                    source: 'locations-source',
+                    'source-layer': 'test',
+                    minzoom: 14,   
+                    maxzoom: 22, 
+                    layout: {
+                        'icon-image': 'location-icon',
+                        'icon-size': ['interpolate', ['linear'], ['zoom'], 14, 0.1, 19, 0.3],
+                        'icon-allow-overlap': true,
+                        'icon-ignore-placement': true,
+                        'text-field': ['get', 'name'],      
+                        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                        'text-offset': [0, 1.2],           
+                        'text-anchor': 'top',
+                        'text-size': 12,
+                        'text-allow-overlap': true,
+                        'text-ignore-placement': true
+                    },
+                    paint: {
+                        'icon-color': [
+                            'match',
+                            ['get', 'type'],
+                            'academic building', '#e74c3c',  
+                            'campus building', '#27ae60',    
+                            'student building', '#2980b9',   
+                            '#888888'                        
+                        ],
+                        'icon-opacity': 1,
+                        'icon-opacity-transition': { duration: 0 },
+                        'icon-occlusion-opacity': 1,
+                        'text-occlusion-opacity': 1,    
+                        'icon-emissive-strength': 1      
+                    }
+                });
+            }
+        }
+    );
+
+    if (!map.getSource("mapbox-dem")) {
+        map.addSource("mapbox-dem", {
+            type: "raster-dem",
+            url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+            tileSize: 512
+        });
+    }
+    
+    map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
 
     map.setLayoutProperty(MAIN_LAYER, "visibility", "visible");
     map.setLayoutProperty(MAIN_LAYER, "icon-allow-overlap", true);
     map.setLayoutProperty(MAIN_LAYER, "text-allow-overlap", true);
     map.setPaintProperty(MAIN_LAYER, "icon-occlusion-opacity", 1);
     map.setPaintProperty(MAIN_LAYER, "text-occlusion-opacity", 1);
-
-    const allSources = map.style.getSources();
-    console.log(allSources);
-
-    const layers = map.getStyle().layers;
-    console.log('Map Layers:', layers);
-    
-    map.addSource("mapbox-dem", {
-        "type": "raster-dem",
-        "url": "mapbox://mapbox.mapbox-terrain-dem-v1",
-        "tileSize": 512,
-    });
-
-    map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
 
     map.addInteraction("click", {
         type: "click",

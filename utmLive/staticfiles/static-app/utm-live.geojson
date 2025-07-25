@@ -1,0 +1,498 @@
+{
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Erindale Hall",
+        "type": "student housing",
+        "tags": "erindale",
+        "code": "r1"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.665566,
+          43.549552
+        ],
+        "type": "Point"
+      },
+      "id": "027c4b2b1effaba91ffe0b1c907735a2"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Central Utilities Plant",
+        "type": "campus building",
+        "tags": "plant, utilities",
+        "code": "c3"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.662131,
+          43.551748
+        ],
+        "type": "Point"
+      },
+      "id": "04b04a24d18778bc447ef4a5b99d702e"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Instructional Centre",
+        "type": "academic building",
+        "tags": "study, lecture, food",
+        "code": "ib"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.663898,
+          43.551501
+        ],
+        "type": "Point"
+      },
+      "id": "0bad15ca9b0750dc99e17eb87c87583e"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Grounds Building",
+        "type": "campus building",
+        "tags": "cleaning",
+        "code": "c7"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.66549,
+          43.55354
+        ],
+        "type": "Point"
+      },
+      "id": "19eb1a4b052c99940dfa9d03f7c480ee"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Leacock Lane",
+        "type": "student housing",
+        "tags": "leacock",
+        "code": "r2"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.663165,
+          43.546118
+        ],
+        "type": "Point"
+      },
+      "id": "22170d682b881db2ee46841b8ac9de90"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Recreation, Athletics and Wellness Centre",
+        "type": "campus building",
+        "tags": "gym, fitness",
+        "code": "rawc"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.660958,
+          43.547967
+        ],
+        "type": "Point"
+      },
+      "id": "29d5472b50026f740c92b8e401076c37"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Oscar Peterson Hall",
+        "type": "student housing",
+        "tags": "oph, colman ",
+        "code": "r5"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.665898,
+          43.548728
+        ],
+        "type": "Point"
+      },
+      "id": "2bf257a8a0883874bc7eabbae629fae8"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Terrence Donnelly Health Sciences Complex",
+        "type": "academic building",
+        "tags": "study, lecture, biology, chemistry, medicine",
+        "code": "hb"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.661976,
+          43.54959
+        ],
+        "type": "Point"
+      },
+      "id": "2c7174f24bc879510dcd451904fd4bf8"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Kaneff Centre",
+        "type": "academic building",
+        "tags": "study, lecture, office of registrar",
+        "code": "kn"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.663143,
+          43.548296
+        ],
+        "type": "Point"
+      },
+      "id": "2fe7b804f4f4519aa9281e761556e37a"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Research Greenhouse",
+        "type": "campus building",
+        "tags": "research, greenhouse, environment",
+        "code": "c11"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.661998,
+          43.550807
+        ],
+        "type": "Point"
+      },
+      "id": "36a9cd459fadf7fb3e1bd6d9a92ac6e5"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Putnam Place",
+        "type": "student housing",
+        "tags": "putnam",
+        "code": "r6"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.66479,
+          43.546789
+        ],
+        "type": "Point"
+      },
+      "id": "443eb7aba096863a2ddccded263104ae"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Schreiberwood",
+        "type": "student housing",
+        "tags": "schreiberwood ",
+        "code": "r8"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.667579,
+          43.549368
+        ],
+        "type": "Point"
+      },
+      "id": "444ca0abf06d100e4cca0929fed9f30b"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Forensic Anthropology Field School",
+        "type": "campus building",
+        "tags": "forensic",
+        "code": "c6"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.665537,
+          43.552962
+        ],
+        "type": "Point"
+      },
+      "id": "45d3d62e21f7a432208764afa72f28d0"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Paleomagnetism Lab",
+        "type": "campus building",
+        "tags": "paleomagnetism, geography",
+        "code": "c9"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.66581,
+          43.553815
+        ],
+        "type": "Point"
+      },
+      "id": "4984f4a2aaaeffbac6deee0978a7c663"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "MaGrath Valley",
+        "type": "student housing",
+        "tags": "magrath",
+        "code": "r3"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.661618,
+          43.545727
+        ],
+        "type": "Point"
+      },
+      "id": "52986257a81d5fe7a39faf51ca215aec"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Deerfield Hall",
+        "type": "academic building",
+        "tags": "study, office, mlc",
+        "code": "dh"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.666329,
+          43.550423
+        ],
+        "type": "Point"
+      },
+      "id": "5c9cbcd2785ab5789c9f660f8410bfa5"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Maanjiwe Nendamowinan",
+        "type": "academic building",
+        "tags": "study, lecture",
+        "code": "mn"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.665894,
+          43.551027
+        ],
+        "type": "Point"
+      },
+      "id": "5eaeee7079f964351e1f371f3f803054"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Student Centre",
+        "type": "campus building",
+        "tags": "blind duck, utmsu",
+        "code": "c12"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.663997,
+          43.548826
+        ],
+        "type": "Point"
+      },
+      "id": "7412e6f6d17a743386afbb2ce68ffaef"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "McLuhan Court",
+        "type": "student housing",
+        "tags": "mcluhan",
+        "code": "r4"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.666081,
+          43.54781
+        ],
+        "type": "Point"
+      },
+      "id": "7aeafb9f9d4ed89b13b11809f5fc9a12"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "New Science Building",
+        "type": "academic building",
+        "tags": "study, science",
+        "code": "sb"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.661001,
+          43.548917
+        ],
+        "type": "Point"
+      },
+      "id": "83796c44e7734db4ae0092069aee0db6"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Academic Annex",
+        "type": "campus building",
+        "tags": "unknown",
+        "code": "c1"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.664419,
+          43.548225
+        ],
+        "type": "Point"
+      },
+      "id": "868303aaf7a0983a7fc3383f069730f4"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": " William G. Davis Building",
+        "type": "academic building",
+        "tags": "study, lecture, food",
+        "code": "dv"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.661852,
+          43.548075
+        ],
+        "type": "Point"
+      },
+      "id": "94e3279f5d3d96aae6c45d51a704f509"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Communication, Culture, & Technology Building",
+        "type": "academic building",
+        "tags": "study, lecture, booth",
+        "code": "cc"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.663127,
+          43.549919
+        ],
+        "type": "Point"
+      },
+      "id": "9e751495cec0171ed480f38753b0ccf1"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "UTM Alumni House",
+        "type": "campus building",
+        "tags": "alumni",
+        "code": "c2"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.660357,
+          43.544711
+        ],
+        "type": "Point"
+      },
+      "id": "a3bf4fe6fce52fd395b74bd2fb16bf5b"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Library",
+        "type": "academic building",
+        "tags": "study, book",
+        "code": "hm"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.662858,
+          43.550824
+        ],
+        "type": "Point"
+      },
+      "id": "b95f51e3f5df6cee29d0279e4defa2f0"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Erindale Studio Theatre",
+        "type": "campus building",
+        "tags": "erindale, theatre, arts",
+        "code": "c5"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.666304,
+          43.549931
+        ],
+        "type": "Point"
+      },
+      "id": "ea08761896663dc6c7a2f4d41fba715c"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Early Learning Child Care Centre",
+        "type": "campus building",
+        "tags": "child care",
+        "code": "c4"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.66446,
+          43.546196
+        ],
+        "type": "Point"
+      },
+      "id": "f8b245477871e72507a7aee9375e2100"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Roy Ivor Hall",
+        "type": "student housing",
+        "tags": "roy ivor",
+        "code": "r7"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.666967,
+          43.548483
+        ],
+        "type": "Point"
+      },
+      "id": "fc97fcfd5e3fd4d46f6b4cf7627222fa"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lislehurst",
+        "type": "campus building",
+        "tags": "principal",
+        "code": "c8"
+      },
+      "geometry": {
+        "coordinates": [
+          -79.668732,
+          43.55468
+        ],
+        "type": "Point"
+      },
+      "id": "fcc31c850308227f777fb883e85bd5a5"
+    }
+  ],
+  "type": "FeatureCollection"
+}
