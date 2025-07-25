@@ -33,7 +33,12 @@
         <div class="map-overlay right" id="properties"></div>
     </div>
 
+    {{ location_preferences | json_script:"location-data" }}
     <script>
+        const locationData = JSON.parse(document.getElementById('location-data').textContent);
+        const codeIds = locationData.map(location => location.code_id);
+        console.log(codeIds);
+
         mapboxgl.accessToken = "{{ mapbox_access_token }}";
         const MAIN_LAYER = "test";
         const BASE_ASSETS_URL = "{% static 'static-app/assets/' %}";

@@ -95,11 +95,18 @@ map.on("style.load", () => {
     map.setPaintProperty(MAIN_LAYER, "icon-occlusion-opacity", 1);
     map.setPaintProperty(MAIN_LAYER, "text-occlusion-opacity", 1);
 
+    const allSources = map.style.getSources();
+    console.log(allSources);
+
+    const layers = map.getStyle().layers;
+    console.log('Map Layers:', layers);
+    
     map.addSource("mapbox-dem", {
         "type": "raster-dem",
         "url": "mapbox://mapbox.mapbox-terrain-dem-v1",
         "tileSize": 512,
     });
+
     map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
 
     map.addInteraction("click", {

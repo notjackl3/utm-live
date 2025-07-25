@@ -4,5 +4,5 @@ from . import views
 
 urlpatterns = [
     path("", views.AddressView.as_view(), name="main"),
-    path("preferences/", views.Preference.as_view(), name="preferences"),
+    path("preferences/", views.PreferenceView.as_view(), name="preferences"),
 ]
