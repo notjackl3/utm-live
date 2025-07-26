@@ -1,3 +1,7 @@
+const SNOW_CODES = [600, 601, 602, 611, 612, 613, 620, 621, 622];
+const RAIN_CODES = [500, 501, 502, 503, 504, 520, 521, 522, 531];
+const SNOW_RAIN_CODES = [511, 615, 616];
+
 const card = document.getElementById("properties");
 function showCard(feature) {
     card.innerHTML = "";
@@ -73,13 +77,45 @@ function hideCard() {
     card.style.display = "none";
     map.resize();
 }
+function setLightPreset(timing, textColor) {
+    map.setConfigProperty('basemap', 'lightPreset', timing);
+    map.setPaintProperty(MAIN_LAYER, 'text-color', textColor);
+}
+
+function changeLightPreset(inputTiming, inputTextColor) {
+    if (inputTiming == "auto (Mississauga)") {
+        const timeZone = 'America/Toronto';
+        const date = new Date();
+        const formatter = new Intl.DateTimeFormat('en-CA', {timeZone: timeZone, hour: 'numeric', hour12: false});        
+        const currentHour = formatter.format(date);
+    
+        switch (true) {
+            case (currentHour >= 5 && currentHour <= 6):
+                setLightPreset("dawn", "#000");
+                break;
+            case (currentHour >= 7 && currentHour <= 17):
+                setLightPreset("day", "#000");
+                break;
+            case (currentHour >= 18 && currentHour <= 19):
+                setLightPreset("dusk", "#fff");
+                break;
+            default:
+                setLightPreset("night", "#fff");
+        }
+    }
+    else {
+        setLightPreset(inputTiming, inputTextColor);
+    }
+    currentLightPreset = inputTiming;
+    document.getElementById("time-button").innerHTML = `Timing: ${inputTiming}`
+}
 
 const map = new mapboxgl.Map({
-    style: 'mapbox://styles/mapbox/standard',
+    style: 'mapbox://styles/mapbox/standard?optimize=true',
     center: [-79.661979, 43.548187],
     zoom: 16.5,
     minZoom: 14.5,
-    maxZoom: 19,
+    maxZoom: 18,
     pitch: 55,
     bearing: 20,
     container: "map",
@@ -92,6 +128,7 @@ const map = new mapboxgl.Map({
 });
 
 let currentLightPreset = null;
+let currentSnowRain = null;
 
 map.on("style.load", async () => {
     let selectedFeature = null;
@@ -133,8 +170,7 @@ map.on("style.load", async () => {
                     },
                     paint: {
                         'icon-color': [
-                            'match',
-                            ['get', 'type'],
+                            'match', ['get', 'type'],
                             'academic building', '#e74c3c',  
                             'campus building', '#27ae60',    
                             'student building', '#2980b9',   
@@ -150,30 +186,8 @@ map.on("style.load", async () => {
                 });
             }
 
-            let currentTime = new Date();
-            let currentHour = currentTime.getHours();
-        
-            switch (true) {
-                case (currentHour >= 5 && currentHour <= 6):
-                    map.setConfigProperty('basemap', 'lightPreset', 'dawn');
-                    currentLightPreset = "dawn";
-                    map.setPaintProperty(MAIN_LAYER, 'text-color', '#fff');
-                    break;
-                case (currentHour >= 7 && currentHour <= 17):
-                    map.setConfigProperty('basemap', 'lightPreset', 'day');
-                    currentLightPreset = "day";
-                    map.setPaintProperty(MAIN_LAYER, 'text-color', '#000');
-                    break;
-                case (currentHour >= 18 && currentHour <= 19):
-                    map.setConfigProperty('basemap', 'lightPreset', 'dusk');
-                    currentLightPreset = "dusk";
-                    map.setPaintProperty(MAIN_LAYER, 'text-color', '#000');
-                    break;
-                default:
-                    map.setConfigProperty('basemap', 'lightPreset', 'night');
-                    currentLightPreset = "night";
-                    map.setPaintProperty(MAIN_LAYER, 'text-color', '#fff');
-            }
+            changeLightPreset("auto (Mississauga)", "#fff");
+            changeSnowRainPreset("auto (Mississauga)");
         }
     );
 
@@ -185,17 +199,12 @@ map.on("style.load", async () => {
         });
     }
 
-    map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
+    map.setTerrain({ "source": "mapbox-dem", "exaggeration": 7 });
 
     map.addInteraction("click", {
         type: "click",
         target: { layerId: MAIN_LAYER },
         handler: async ({ feature }) => {
-            if (selectedFeature) {
-                map.setFeatureState(selectedFeature, { selected: false });
-            }
-            selectedFeature = feature;
-            map.setFeatureState(feature, { selected: true });
             await showCard(feature);
             map.resize();
             map.flyTo({
@@ -238,26 +247,123 @@ function geoFindMe() {
 document.querySelector("#my-location-button").addEventListener("click", geoFindMe);
 
 function switchTime() {
-    console.log()
     if (currentLightPreset == "dawn") {
-        map.setConfigProperty('basemap', 'lightPreset', 'day');
-        currentLightPreset = "day";
-        map.setPaintProperty(MAIN_LAYER, 'text-color', '#000');
+        changeLightPreset("day", "#000");
     }
     else if (currentLightPreset == "day") {
-        map.setConfigProperty('basemap', 'lightPreset', 'dusk');
-        currentLightPreset = "dusk";
-        map.setPaintProperty(MAIN_LAYER, 'text-color', '#fff');
+        changeLightPreset("dusk", "#fff");
     }
     else if (currentLightPreset == "dusk") {
-        map.setConfigProperty('basemap', 'lightPreset', 'night');
-        currentLightPreset = "night";
-        map.setPaintProperty(MAIN_LAYER, 'text-color', '#fff');
+        changeLightPreset("night", "#fff");
+    }
+    else if (currentLightPreset == "night") {
+        changeLightPreset("auto (Mississauga)", "#fff");
     }
     else {
-        map.setConfigProperty('basemap', 'lightPreset', 'dawn');
-        currentLightPreset = "dawn";
-        map.setPaintProperty(MAIN_LAYER, 'text-color', '#000');
+        changeLightPreset("dawn", "#000");
     }
 }
 document.querySelector("#time-button").addEventListener("click", switchTime);
+
+async function checkWeather() {
+    try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Mississauga&appid=${OPENWEATHER_TOKEN}&units=metric`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.weather[0].id;
+    } catch (error) {
+        console.error('Error fetching weather data:', error);
+        return null;
+    }
+}
+
+function setSnowPreset(den, int, cen, dir, opa, size, vig) {
+    map.setSnow({
+        density: den,
+        intensity: int, "center-thinning": cen,
+        direction: dir,
+        opacity: opa,
+        color: "#fff",
+        'flake-size': size,
+        vignette: vig,
+    });
+}
+
+function setRainPreset(den, int, opa, vig, dir, size, dis, cen) {
+    map.setRain({
+        density: den,
+        intensity: int,
+        color: "#a8baed",
+        opacity: opa,
+        vignette: vig, 'vignette-color': '#464646',
+        direction: dir,
+        'droplet-size': size,
+        'distortion-strength': dis,
+        'center-thinning': cen 
+    });
+}
+
+function zoomBasedReveal(value) {
+    return ['interpolate', ['linear'], ['zoom'], 11, 0.0, 13, value];
+};
+
+function setSnowRain(condition) {
+    if (condition == "snow") {
+        setSnowPreset(zoomBasedReveal(0.85), 1, 0.1, [0, 0], 1, 0.71, zoomBasedReveal(0.3))
+        setRainPreset(0, 0, 0, 0, [0, 0], [0, 0], 0, 0);
+    }
+    else if (condition == "rain") {
+        setSnowPreset(0, 0, 0, [0, 0], 0, 0, 0, false)
+        setRainPreset(zoomBasedReveal(0.5), 1, 0.7, zoomBasedReveal(1.0), [0, 80], [2.6, 18.2], 0.7, 0);
+    }
+    else if (condition == "snow + rain") {
+        setSnowPreset(zoomBasedReveal(0.85), 1, 0.1, [0, 0], 1, 0.71, zoomBasedReveal(0.3))
+        setRainPreset(zoomBasedReveal(0.5), 1, 0.7, zoomBasedReveal(1.0), [0, 80], [2.6, 18.2], 0.7, 0);
+    }
+    else {
+        setSnowPreset(0, 0, 0, [0, 0], 0, 0, 0);
+        setRainPreset(0, 0, 0, 0, [0, 0], [0, 0], 0, 0);
+    }
+}
+
+async function changeSnowRainPreset(inputSnowRain) {
+    if (inputSnowRain == "auto (Mississauga)") {
+        const weatherId = await checkWeather();
+        console.log('Weather ID:', weatherId);
+        if (SNOW_CODES.includes(weatherId)) {
+            setSnowRain("snow");
+        } else if (RAIN_CODES.includes(weatherId)) {
+            setSnowRain("rain");
+        } else if (SNOW_RAIN_CODES.includes(weatherId)) {
+            setSnowRain("snow + rain");
+        } else {
+            setSnowRain("none");
+        }
+    }
+    else {
+        setSnowRain(inputSnowRain);
+    }
+    currentSnowRain = inputSnowRain;
+    document.getElementById("weather-button").innerHTML = `Weather: ${inputSnowRain}`
+}
+
+function switchSnowRain() {
+    if (currentSnowRain == "none") {
+        changeSnowRainPreset("snow");
+    }
+    else if (currentSnowRain == "snow") {
+        changeSnowRainPreset("rain");
+    }
+    else if (currentSnowRain == "rain") {
+        changeSnowRainPreset("snow + rain");
+    }
+    else if (currentSnowRain == "snow + rain") {
+        changeSnowRainPreset("auto (Mississauga)");
+    }
+    else {
+        changeSnowRainPreset("none");
+    }
+}
+document.querySelector("#weather-button").addEventListener("click", switchSnowRain);

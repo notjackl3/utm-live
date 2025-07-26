@@ -14,6 +14,10 @@ from pathlib import Path
 import os
 import dotenv
 
+MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
+OPENWEATHER_TOKEN = os.getenv("OPENWEATHER_TOKEN")
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

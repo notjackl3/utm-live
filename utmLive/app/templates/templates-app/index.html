@@ -30,7 +30,11 @@
         </div>
 
         <div class="my-location-wrapper">
-            <button id="time-button" class="base-button"> Switch time </button>
+            <button id="time-button" class="base-button"> Timing: auto </button>
+        </div>
+
+        <div class="my-location-wrapper">
+            <button id="weather-button" class="base-button"> Snow effect: off </button>
         </div>
     </div>
 
@@ -46,6 +50,7 @@
         console.log(codeIds);
 
         mapboxgl.accessToken = "{{ mapbox_access_token }}";
+        const OPENWEATHER_TOKEN = "{{ openweather_token }}"
         const MAIN_LAYER = "locations";
         const BASE_ASSETS_URL = "{% static 'static-app/assets/' %}";
     </script>

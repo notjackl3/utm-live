@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.conf import settings
 from .serializers import PreferenceSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -20,7 +21,8 @@ class AddressView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         locations = Preference.objects.all().filter(user=self.request.user)
         context = super().get_context_data(**kwargs)
-        context["mapbox_access_token"] = "pk.eyJ1Ijoibm90amFja2wzIiwiYSI6ImNtY3NxOWlkaDE1YXQyanEwYWI0MjZicWYifQ.TmrkcNK6jBFrQ37uJucAAg"
+        context["mapbox_access_token"] = settings.MAPBOX_TOKEN
+        context["openweather_token"] = settings.OPENWEATHER_TOKEN
         context["addresses"] = Address.objects.all()
         context["location_preferences"] = list(locations.values())
         return context
