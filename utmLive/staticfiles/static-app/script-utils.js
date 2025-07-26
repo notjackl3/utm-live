@@ -79,3 +79,23 @@ async function addToFav(code) {
         refreshAccessToken();
     }
 }
+
+
+function zoomBasedReveal(value) {
+    return ['interpolate', ['linear'], ['zoom'], 11, 0.0, 13, value];
+};
+
+
+async function checkWeather() {
+    try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Mississauga&appid=${OPENWEATHER_TOKEN}&units=metric`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.weather[0].id;
+    } catch (error) {
+        console.error('Error fetching weather data:', error);
+        return null;
+    }
+}

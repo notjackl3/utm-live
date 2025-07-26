@@ -169,6 +169,14 @@ nav {
     margin-top: 30px;
 }
 
+.buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    padding: 0 1rem;
+    justify-content: center;
+}
+
 @media screen and (max-width: 820px) {
     .map-wrapper {
         flex-direction: column;
