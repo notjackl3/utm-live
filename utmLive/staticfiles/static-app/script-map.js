@@ -97,68 +97,53 @@ map.on("style.load", () => {
     }
 
     map.loadImage(
-        '/static/static-app/assets/location.svg',
+        '/static/static-app/assets/location.png',
         (error, image) => {
             if (error) throw error;
+            map.addImage('location-icon', image, { sdf: true });
+            
+            if (!map.getLayer(MAIN_LAYER)) {
+                map.addLayer({
+                    id: MAIN_LAYER,
+                    type: 'symbol',
+                    source: 'locations-source',
+                    'source-layer': 'test',
+                    minzoom: 14,   
+                    maxzoom: 22, 
+                    layout: {
+                        'icon-image': 'location-icon',
+                        'icon-size': ['interpolate', ['linear'], ['zoom'], 14, 0.1, 19, 0.3],
+                        'icon-allow-overlap': true,
+                        'icon-ignore-placement': true,
 
-            // Add the image to the map style.
-            map.addImage('cat', image);
-
-            // Add a data source containing one point feature.
-            map.addSource('point', {
-                'type': 'geojson',
-                'data': {
-                    'type': 'FeatureCollection',
-                    'features': [
-                        {
-                            'type': 'Feature',
-                            'geometry': {
-                                'type': 'Point',
-                                'coordinates': [-77.4144, 25.0759]
-                            }
-                        }
-                    ]
-                }
-            });
-
-            // Add a layer to use the image to represent the data.
-            map.addLayer({
-                'id': 'points',
-                'type': 'symbol',
-                'source': 'point', // reference the data source
-                'layout': {
-                    'icon-image': 'cat', // reference the image
-                    'icon-size': 0.25
-                }
-            });
+                        'text-field': ['get', 'name'],      
+                        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+                        'text-anchor': 'center',
+                        'text-offset': [0, 4],
+                        'text-size': 11,
+                        'text-allow-overlap': true,
+                        'text-ignore-placement': true
+                    },
+                    paint: {
+                        'icon-color': [
+                            'match',
+                            ['get', 'type'],
+                            'academic building', '#e74c3c',  
+                            'campus building', '#27ae60',    
+                            'student building', '#2980b9',   
+                            '#888888'                        
+                        ],
+                        'icon-opacity': 1,
+                        'icon-occlusion-opacity': 1,    
+                        'icon-emissive-strength': 1,    
+                                                
+                        'text-opacity': ['interpolate', ['linear'], ['zoom'], 14.5, 0, 16.5, 1],
+                        'text-occlusion-opacity': 1,
+                    }
+                });
+            }
         }
     );
-
-
-    if (!map.getLayer(MAIN_LAYER)) {
-        map.addLayer({
-            id: MAIN_LAYER,
-            type: 'symbol',
-            source: 'locations-source',
-            'source-layer': 'test',
-            layout: {
-            'icon-image': 'location-icon',  
-            'icon-size': 0.5,
-            'icon-allow-overlap': true,
-            'icon-ignore-placement': true
-            },
-            paint: {
-            'icon-color': [
-                'match',
-                ['get', 'type'],
-                'academic building', '#e74c3c',  // red
-                'campus building', '#27ae60',    // green
-                'student building', '#2980b9',   // blue
-                '#888888'                        // fallback grey
-            ]
-            }
-        });
-        }
 
     if (!map.getSource("mapbox-dem")) {
         map.addSource("mapbox-dem", {
@@ -198,6 +183,10 @@ map.on("style.load", () => {
     });
     map.on("mouseleave", MAIN_LAYER, () => {
         map.getCanvas().style.cursor = "";
+    });
+
+    map.on('zoomend', () => {
+        console.log('Map Zoomed to:', map.getZoom());
     });
 });
 

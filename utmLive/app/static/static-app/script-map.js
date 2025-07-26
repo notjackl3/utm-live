@@ -84,9 +84,16 @@ const map = new mapboxgl.Map({
     bearing: 20,
     container: "map",
     antialias: true,
+    config: {
+        basemap: {
+          showPointOfInterestLabels: false, 
+        },
+    },
 });
 
-map.on("style.load", () => {
+let currentLightPreset = null;
+
+map.on("style.load", async () => {
     let selectedFeature = null;
 
     if (!map.getSource("locations-source")) {
@@ -96,7 +103,7 @@ map.on("style.load", () => {
         });
     }
 
-    map.loadImage(
+    await map.loadImage(
         '/static/static-app/assets/location.png',
         (error, image) => {
             if (error) throw error;
@@ -112,14 +119,15 @@ map.on("style.load", () => {
                     maxzoom: 22, 
                     layout: {
                         'icon-image': 'location-icon',
-                        'icon-size': ['interpolate', ['linear'], ['zoom'], 14, 0.1, 19, 0.3],
+                        'icon-size': ['interpolate', ['linear'], ['zoom'], 14, 0.01, 19, 0.2],
                         'icon-allow-overlap': true,
                         'icon-ignore-placement': true,
+
                         'text-field': ['get', 'name'],      
-                        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-                        'text-offset': [0, 1.2],           
-                        'text-anchor': 'top',
-                        'text-size': 12,
+                        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+                        'text-anchor': 'center',
+                        'text-offset': ['interpolate', ['linear'], ['zoom'], 14, ['literal', [0, 2]], 19, ['literal', [0, 5]] ],
+                        'text-size': ['interpolate', ['linear'], ['zoom'], 14, 10, 19, 14],
                         'text-allow-overlap': true,
                         'text-ignore-placement': true
                     },
@@ -133,12 +141,38 @@ map.on("style.load", () => {
                             '#888888'                        
                         ],
                         'icon-opacity': 1,
-                        'icon-opacity-transition': { duration: 0 },
-                        'icon-occlusion-opacity': 1,
-                        'text-occlusion-opacity': 1,    
-                        'icon-emissive-strength': 1      
+                        'icon-occlusion-opacity': 1,    
+                        'icon-emissive-strength': 1,    
+                                                
+                        'text-opacity': ['interpolate', ['linear'], ['zoom'], 14.5, 0, 16.5, 1],
+                        'text-occlusion-opacity': 1,
                     }
                 });
+            }
+
+            let currentTime = new Date();
+            let currentHour = currentTime.getHours();
+        
+            switch (true) {
+                case (currentHour >= 5 && currentHour <= 6):
+                    map.setConfigProperty('basemap', 'lightPreset', 'dawn');
+                    currentLightPreset = "dawn";
+                    map.setPaintProperty(MAIN_LAYER, 'text-color', '#fff');
+                    break;
+                case (currentHour >= 7 && currentHour <= 17):
+                    map.setConfigProperty('basemap', 'lightPreset', 'day');
+                    currentLightPreset = "day";
+                    map.setPaintProperty(MAIN_LAYER, 'text-color', '#000');
+                    break;
+                case (currentHour >= 18 && currentHour <= 19):
+                    map.setConfigProperty('basemap', 'lightPreset', 'dusk');
+                    currentLightPreset = "dusk";
+                    map.setPaintProperty(MAIN_LAYER, 'text-color', '#000');
+                    break;
+                default:
+                    map.setConfigProperty('basemap', 'lightPreset', 'night');
+                    currentLightPreset = "night";
+                    map.setPaintProperty(MAIN_LAYER, 'text-color', '#fff');
             }
         }
     );
@@ -150,14 +184,8 @@ map.on("style.load", () => {
             tileSize: 512
         });
     }
-    
-    map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
 
-    map.setLayoutProperty(MAIN_LAYER, "visibility", "visible");
-    map.setLayoutProperty(MAIN_LAYER, "icon-allow-overlap", true);
-    map.setLayoutProperty(MAIN_LAYER, "text-allow-overlap", true);
-    map.setPaintProperty(MAIN_LAYER, "icon-occlusion-opacity", 1);
-    map.setPaintProperty(MAIN_LAYER, "text-occlusion-opacity", 1);
+    map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
 
     map.addInteraction("click", {
         type: "click",
@@ -207,5 +235,29 @@ function geoFindMe() {
     }   
     navigator.geolocation.getCurrentPosition(success);
 }
-
 document.querySelector("#my-location-button").addEventListener("click", geoFindMe);
+
+function switchTime() {
+    console.log()
+    if (currentLightPreset == "dawn") {
+        map.setConfigProperty('basemap', 'lightPreset', 'day');
+        currentLightPreset = "day";
+        map.setPaintProperty(MAIN_LAYER, 'text-color', '#000');
+    }
+    else if (currentLightPreset == "day") {
+        map.setConfigProperty('basemap', 'lightPreset', 'dusk');
+        currentLightPreset = "dusk";
+        map.setPaintProperty(MAIN_LAYER, 'text-color', '#fff');
+    }
+    else if (currentLightPreset == "dusk") {
+        map.setConfigProperty('basemap', 'lightPreset', 'night');
+        currentLightPreset = "night";
+        map.setPaintProperty(MAIN_LAYER, 'text-color', '#fff');
+    }
+    else {
+        map.setConfigProperty('basemap', 'lightPreset', 'dawn');
+        currentLightPreset = "dawn";
+        map.setPaintProperty(MAIN_LAYER, 'text-color', '#000');
+    }
+}
+document.querySelector("#time-button").addEventListener("click", switchTime);
