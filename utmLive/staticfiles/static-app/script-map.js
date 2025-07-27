@@ -2,9 +2,10 @@ const SNOW_CODES = [600, 601, 602, 611, 612, 613, 620, 621, 622];
 const RAIN_CODES = [500, 501, 502, 503, 504, 520, 521, 522, 531];
 const SNOW_RAIN_CODES = [511, 615, 616];
 let currentLightPreset = null;
-let currentSnowRain = null;
-
+let currentSnowRainPreset = null;
 const card = document.getElementById("properties");
+
+// show popup cards of campus locations and their properties
 async function showCard(feature) {
     card.innerHTML = "";
     const container = document.createElement("div");
@@ -78,18 +79,67 @@ function hideCard() {
     card.style.display = "none";
     map.resize();
 }
+
+// set the map lighting
 function setLightPreset(timing, textColor) {
     map.setConfigProperty('basemap', 'lightPreset', timing);
     map.setPaintProperty(MAIN_LAYER, 'text-color', textColor);
 }
+// set the snow level
+function setSnowPreset(den, int, cen, dir, opa, size, vig) {
+    map.setSnow({
+        density: den,
+        intensity: int, "center-thinning": cen,
+        direction: dir,
+        opacity: opa,
+        color: "#fff",
+        'flake-size': size,
+        vignette: vig,
+    });
+}
+// set the rain level
+function setRainPreset(den, int, opa, vig, dir, size, dis, cen) {
+    map.setRain({
+        density: den,
+        intensity: int,
+        color: "#a8baed",
+        opacity: opa,
+        vignette: vig, 'vignette-color': '#464646',
+        direction: dir,
+        'droplet-size': size,
+        'distortion-strength': dis,
+        'center-thinning': cen 
+    });
+}
+// set the weather condition (snow and rain)
+function setSnowRainPreset(inputCondition) {
+    if (inputCondition == "snow") {
+        setSnowPreset(zoomBasedReveal(0.85), 1, 0.1, [0, 0], 1, 0.71, zoomBasedReveal(0.3))
+        setRainPreset(0, 0, 0, 0, [0, 0], [0, 0], 0, 0);
+    }
+    else if (inputCondition == "rain") {
+        setSnowPreset(0, 0, 0, [0, 0], 0, 0, 0, false)
+        setRainPreset(zoomBasedReveal(0.5), 1, 0.7, zoomBasedReveal(1.0), [0, 80], [2.6, 18.2], 0.7, 0);
+    }
+    else if (inputCondition == "snow + rain") {
+        setSnowPreset(zoomBasedReveal(0.85), 1, 0.1, [0, 0], 1, 0.71, zoomBasedReveal(0.3))
+        setRainPreset(zoomBasedReveal(0.5), 1, 0.7, zoomBasedReveal(1.0), [0, 80], [2.6, 18.2], 0.7, 0);
+    }
+    else {
+        setSnowPreset(0, 0, 0, [0, 0], 0, 0, 0);
+        setRainPreset(0, 0, 0, 0, [0, 0], [0, 0], 0, 0);
+    }
+}
 
+// logic to change the lighting
 function changeLightPreset(inputTiming, inputTextColor) {
     if (inputTiming == "auto (Mississauga)") {
+        // detect and update timing based on the current time of Missisauga
         const timeZone = 'America/Toronto';
         const date = new Date();
         const formatter = new Intl.DateTimeFormat('en-CA', {timeZone: timeZone, hour: 'numeric', hour12: false});        
         const currentHour = formatter.format(date);
-    
+        // change lighting based on the hour of the day
         switch (true) {
             case (currentHour >= 5 && currentHour <= 6):
                 setLightPreset("dawn", "#000");
@@ -107,59 +157,14 @@ function changeLightPreset(inputTiming, inputTextColor) {
     else {
         setLightPreset(inputTiming, inputTextColor);
     }
-    currentLightPreset = inputTiming;
-    document.getElementById("time-button").innerHTML = `Timing: ${inputTiming}`
+    currentLightPreset = inputTiming; // update the current lighting setting
+    document.getElementById("time-button").innerHTML = `Timing: ${inputTiming}` // update button
 }
-
-function setSnowPreset(den, int, cen, dir, opa, size, vig) {
-    map.setSnow({
-        density: den,
-        intensity: int, "center-thinning": cen,
-        direction: dir,
-        opacity: opa,
-        color: "#fff",
-        'flake-size': size,
-        vignette: vig,
-    });
-}
-
-function setRainPreset(den, int, opa, vig, dir, size, dis, cen) {
-    map.setRain({
-        density: den,
-        intensity: int,
-        color: "#a8baed",
-        opacity: opa,
-        vignette: vig, 'vignette-color': '#464646',
-        direction: dir,
-        'droplet-size': size,
-        'distortion-strength': dis,
-        'center-thinning': cen 
-    });
-}
-
-function setSnowRainPreset(condition) {
-    if (condition == "snow") {
-        setSnowPreset(zoomBasedReveal(0.85), 1, 0.1, [0, 0], 1, 0.71, zoomBasedReveal(0.3))
-        setRainPreset(0, 0, 0, 0, [0, 0], [0, 0], 0, 0);
-    }
-    else if (condition == "rain") {
-        setSnowPreset(0, 0, 0, [0, 0], 0, 0, 0, false)
-        setRainPreset(zoomBasedReveal(0.5), 1, 0.7, zoomBasedReveal(1.0), [0, 80], [2.6, 18.2], 0.7, 0);
-    }
-    else if (condition == "snow + rain") {
-        setSnowPreset(zoomBasedReveal(0.85), 1, 0.1, [0, 0], 1, 0.71, zoomBasedReveal(0.3))
-        setRainPreset(zoomBasedReveal(0.5), 1, 0.7, zoomBasedReveal(1.0), [0, 80], [2.6, 18.2], 0.7, 0);
-    }
-    else {
-        setSnowPreset(0, 0, 0, [0, 0], 0, 0, 0);
-        setRainPreset(0, 0, 0, 0, [0, 0], [0, 0], 0, 0);
-    }
-}
-
+// logic to change the weather (snow and rain)
 async function changeSnowRainPreset(inputSnowRain) {
     if (inputSnowRain == "auto (Mississauga)") {
-        const weatherId = await checkWeather();
-        console.log('Weather ID:', weatherId);
+        // check for the current weather of Mississauga
+        const weatherId = await checkWeather(); // return the weather code
         if (SNOW_CODES.includes(weatherId)) {
             setSnowRainPreset("snow");
         } else if (RAIN_CODES.includes(weatherId)) {
@@ -173,10 +178,11 @@ async function changeSnowRainPreset(inputSnowRain) {
     else {
         setSnowRainPreset(inputSnowRain);
     }
-    currentSnowRain = inputSnowRain;
-    document.getElementById("weather-button").innerHTML = `Weather: ${inputSnowRain}`
+    currentSnowRainPreset = inputSnowRain; //  update the current weather setting
+    document.getElementById("weather-button").innerHTML = `Weather: ${inputSnowRain}` // update button
 }
 
+// initiate a new map
 const map = new mapboxgl.Map({
     style: 'mapbox://styles/mapbox/standard?optimize=true',
     center: [-79.661979, 43.548187],
@@ -193,7 +199,7 @@ const map = new mapboxgl.Map({
         },
     },
 });
-
+// wait for the map to load before adding sources and layers
 map.on("style.load", async () => {
     let selectedFeature = null;
 
@@ -204,11 +210,16 @@ map.on("style.load", async () => {
         });
     }
 
+    await map.loadImage('/static/static-app/assets/location-fav.png', (error, image) => {
+        if (error) throw error;
+        map.addImage('location-fav-icon', image, { sdf: true });
+    });
+
     await map.loadImage(
-        '/static/static-app/assets/location.png',
+        '/static/static-app/assets/location.png', // load up custom icon images
         (error, image) => {
             if (error) throw error;
-            map.addImage('location-icon', image, { sdf: true });
+            map.addImage('location-icon', image, { sdf: true }); // sdf to allow changing colors
             
             if (!map.getLayer(MAIN_LAYER)) {
                 map.addLayer({
@@ -219,7 +230,11 @@ map.on("style.load", async () => {
                     minzoom: 14,   
                     maxzoom: 22, 
                     layout: {
-                        'icon-image': 'location-icon',
+                        'icon-image': [
+                            'case',
+                            ['in', ['get', 'code'], ['literal', codeIds]], 'location-fav-icon',
+                            'location-icon'
+                        ],
                         'icon-size': ['interpolate', ['linear'], ['zoom'], 14, 0.01, 19, 0.2],
                         'icon-allow-overlap': true,
                         'icon-ignore-placement': true,
@@ -234,11 +249,14 @@ map.on("style.load", async () => {
                     },
                     paint: {
                         'icon-color': [
-                            'match', ['get', 'type'],
-                            'academic building', '#e74c3c',  
-                            'campus building', '#27ae60',    
-                            'student building', '#2980b9',   
-                            '#888888'                        
+                        'case',
+                        ['in', ['get', 'code'], ['literal', codeIds]], '#f1c40f',
+                        ['match', ['get', 'type'],
+                            'academic building', '#e74c3c',
+                            'campus building', '#27ae60',
+                            'student building', '#2980b9',
+                            '#888888'
+                        ]
                         ],
                         'icon-opacity': 1,
                         'icon-occlusion-opacity': 1,    

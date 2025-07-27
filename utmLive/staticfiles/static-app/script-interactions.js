@@ -1,3 +1,4 @@
+// geolocate allows user to detect their current location
 var geolocate = new mapboxgl.GeolocateControl({
     positionOptions: {
         enableHighAccuracy: true
@@ -7,55 +8,46 @@ var geolocate = new mapboxgl.GeolocateControl({
 });
 map.addControl(geolocate);
 
+// determine if the user is within Ontario. If now then their location is not tracked
 function geoFindMe() {
     function success(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         if (isInOntario({lat: latitude, lng: longitude})) {
             geolocate.trigger();
-            console.log("User is within Ontario bounds.");
         } else {
-            alert("You are outside Ontario. Ontario-specific map data will not be shown.");
+            alert("You are outside Ontario, your location can't be tracked.");
         }
     }   
     navigator.geolocation.getCurrentPosition(success);
 }
-document.querySelector("#my-location-button").addEventListener("click", geoFindMe);
+document.getElementById("my-location-button").addEventListener("click", geoFindMe);
 
+// toggle between different time settings
 function switchTime() {
-    if (currentLightPreset == "dawn") {
-        changeLightPreset("day", "#000");
+    const lightPresetOrder = ["dawn", "day", "dusk", "night", "auto (Mississauga)"]
+    const colorPairs = {
+        "dawn": "#000",
+        "day": "#000",
+        "dusk": "#fff",
+        "night": "#fff",
+        "auto (Mississauga)": "#fff"
     }
-    else if (currentLightPreset == "day") {
-        changeLightPreset("dusk", "#fff");
-    }
-    else if (currentLightPreset == "dusk") {
-        changeLightPreset("night", "#fff");
-    }
-    else if (currentLightPreset == "night") {
-        changeLightPreset("auto (Mississauga)", "#fff");
-    }
-    else {
-        changeLightPreset("dawn", "#000");
-    }
-}
-document.querySelector("#time-button").addEventListener("click", switchTime);
 
-function switchSnowRain() {
-    if (currentSnowRain == "none") {
-        changeSnowRainPreset("snow");
-    }
-    else if (currentSnowRain == "snow") {
-        changeSnowRainPreset("rain");
-    }
-    else if (currentSnowRain == "rain") {
-        changeSnowRainPreset("snow + rain");
-    }
-    else if (currentSnowRain == "snow + rain") {
-        changeSnowRainPreset("auto (Mississauga)");
-    }
-    else {
-        changeSnowRainPreset("none");
-    }
+    const newIndex = (lightPresetOrder.indexOf(currentLightPreset) + 1) % lightPresetOrder.length
+    const newLight = lightPresetOrder[newIndex]
+
+    changeLightPreset(newLight, colorPairs[newLight])
 }
-document.querySelector("#weather-button").addEventListener("click", switchSnowRain);
+document.getElementById("time-button").addEventListener("click", switchTime);
+
+// toggle between different weather settings
+function switchSnowRain() {
+    const snowRainPresetOrder = ["none", "snow", "rain", "snow + rain", "auto (Mississauga)"]
+
+    const newIndex = (snowRainPresetOrder.indexOf(currentSnowRainPreset) + 1) % snowRainPresetOrder.length
+    const newSnowRain = snowRainPresetOrder[newIndex]
+
+    changeSnowRainPreset(newSnowRain);
+}
+document.getElementById("weather-button").addEventListener("click", switchSnowRain);

@@ -13,7 +13,7 @@ function getCookie(name) {
     return cookieValue;
 }
 
-
+// check if a location is inside Ontario
 function isInOntario(center) {
     return (
         center.lng >= -139.05 &&
@@ -31,7 +31,7 @@ function getImagePath(name) {
 
 async function refreshAccessToken() {
     currentRefreshToken = localStorage.getItem("refresh_token");
-
+    // try to retrieve a new access token when the old one expires
     const response = await fetch("/api/token/refresh/", {
         method: "POST",
         headers: {
@@ -64,7 +64,7 @@ async function addToFav(code) {
             headers: {
                 "Content-Type": "application/json",
                 "X-CSRFToken": getCookie("csrftoken"),
-                "Authorization": `'Bearer ${accessToken}`
+                "Authorization": `'Bearer ${accessToken}` // for authentication purposes
             },
             credentials: "include",
             body: JSON.stringify({
