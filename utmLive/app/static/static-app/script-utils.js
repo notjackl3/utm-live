@@ -29,6 +29,60 @@ function getImagePath(name) {
 }
 
 
+function updateMapFavChange() {
+    map.setLayoutProperty(MAIN_LAYER, 'icon-image', [
+        'case',
+        ['in', ['get', 'code'], ['literal', codeIds]], 'location-fav-icon',
+        'location-icon'
+    ]);
+
+    map.setPaintProperty(MAIN_LAYER, 'icon-color', [
+        'case',
+        ['in', ['get', 'code'], ['literal', codeIds]], '#f1c40f',
+        ['match', ['get', 'type'],
+            'academic building', '#e74c3c',
+            'campus building', '#27ae60',
+            'student building', '#2980b9',
+            '#888888'
+        ]
+    ]);
+}
+
+
+function updateButtonUI(code) {
+    const buttonWrapper = document.querySelector(`[data-code="${code}"]`);
+    if (!buttonWrapper) return;
+
+    buttonWrapper.innerHTML = "";
+
+    if (codeIds.includes(code)) {
+        const removeFavButton = document.createElement("button");
+        removeFavButton.classList.add("base-button", "fav-button");
+        removeFavButton.innerHTML = "remove from favourites";
+        removeFavButton.addEventListener("click", () => {
+            removeFromFav(code);
+        });
+        buttonWrapper.appendChild(removeFavButton);
+    } else {
+        const favButton = document.createElement("button");
+        favButton.classList.add("base-button", "fav-button");
+        favButton.innerHTML = "add to favourites";
+        favButton.addEventListener("click", () => {
+            addToFav(code);
+        });
+        buttonWrapper.appendChild(favButton);
+    }
+
+    const closeButton = document.createElement("button");
+    closeButton.classList.add("base-button", "close-button");
+    closeButton.innerHTML = "close";
+    closeButton.addEventListener("click", hideCard);
+    buttonWrapper.appendChild(closeButton)
+
+    updateMapFavChange()
+}
+
+
 async function refreshAccessToken() {
     currentRefreshToken = localStorage.getItem("refresh_token");
     // try to retrieve a new access token when the old one expires
@@ -58,13 +112,12 @@ async function refreshAccessToken() {
 async function addToFav(code) {
     accessToken = localStorage.getItem("access_token")
     if (accessToken) {
-        console.log(accessToken)
         const response = await fetch("/main/preferences/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "X-CSRFToken": getCookie("csrftoken"),
-                "Authorization": `'Bearer ${accessToken}` // for authentication purposes
+                "Authorization": `'Bearer ${accessToken}'` // for authentication purposes
             },
             credentials: "include",
             body: JSON.stringify({
@@ -74,6 +127,33 @@ async function addToFav(code) {
         if (!response.ok) throw new Error("Failed to save preference.");
         data = await response.json()
         console.log("Preference saved", data);
+        codeIds.push(code);
+        updateButtonUI(code);
+    }
+    else {
+        refreshAccessToken();
+    }
+}
+
+
+async function removeFromFav(code) {
+    accessToken = localStorage.getItem("access_token")
+    if (accessToken) {
+        const response = await fetch("/main/preferences/", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Authorization": `'Bearer ${accessToken}'` // for authentication purposes
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                code: code
+            }),
+        })
+        if (!response.ok) throw new Error("Failed to delete preference.");
+        codeIds = codeIds.filter(id => id !== code);
+        updateButtonUI(code);
     }
     else {
         refreshAccessToken();

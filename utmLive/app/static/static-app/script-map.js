@@ -5,29 +5,43 @@ let currentLightPreset = null;
 let currentSnowRainPreset = null;
 const card = document.getElementById("properties");
 
+
 // show popup cards of campus locations and their properties
 async function showCard(feature) {
     card.innerHTML = "";
     const container = document.createElement("div");
     container.className = "map-overlay-inner";
 
+    const buttonWrapper = document.createElement("div");
+    buttonWrapper.style.display = "flex";
+    buttonWrapper.style.justifyContent = "end";
+    buttonWrapper.setAttribute("data-code", feature.properties.code);
+
+    if (codeIds.includes(feature.properties.code)) {
+        const removeFavButton = document.createElement("button");
+        removeFavButton.classList.add("base-button", "fav-button");
+        removeFavButton.innerHTML = "remove from favourites";
+        removeFavButton.addEventListener("click", () => {
+            removeFromFav(feature.properties.code);
+        });
+        buttonWrapper.appendChild(removeFavButton);
+    }
+    else {
+        const favButton = document.createElement("button");
+        favButton.classList.add("base-button", "fav-button");
+        favButton.innerHTML = "add to favourites";
+        favButton.addEventListener("click", () => {
+            addToFav(feature.properties.code);
+        });
+        buttonWrapper.appendChild(favButton);
+    }
+
     const closeButton = document.createElement("button");
     closeButton.classList.add("base-button", "close-button");
     closeButton.innerHTML = "close";
     closeButton.addEventListener("click", hideCard);
-
-    const favButton = document.createElement("button");
-    favButton.classList.add("base-button", "fav-button");
-    favButton.innerHTML = "add to favourites";
-    favButton.addEventListener("click", () => {
-        addToFav(feature.properties.code);
-    });
-
-    const buttonWrapper = document.createElement("div");
-    buttonWrapper.style.display = "flex";
-    buttonWrapper.style.justifyContent = "end";
-    buttonWrapper.appendChild(favButton)
     buttonWrapper.appendChild(closeButton)
+    
     container.appendChild(buttonWrapper);
 
     const locationName = document.createElement("h1");
@@ -215,8 +229,7 @@ map.on("style.load", async () => {
         map.addImage('location-fav-icon', image, { sdf: true });
     });
 
-    await map.loadImage(
-        '/static/static-app/assets/location.png', // load up custom icon images
+    await map.loadImage('/static/static-app/assets/location.png', // load up custom icon images
         (error, image) => {
             if (error) throw error;
             map.addImage('location-icon', image, { sdf: true }); // sdf to allow changing colors

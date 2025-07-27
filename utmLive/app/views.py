@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.views.generic.edit import CreateView
 from .models import Address, Location, Preference
+import json
 
 def home(request):
     return render(request, "templates-app/index.html")
@@ -37,3 +38,16 @@ class PreferenceView(APIView):
             serializer.save(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        user = request.user
+        data = json.loads(request.body)
+
+        try:
+            preference = Preference.objects.get(user=user, code_id=data.get("code"))
+        except Preference.DoesNotExist:
+            return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        preference.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
