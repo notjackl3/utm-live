@@ -152,6 +152,7 @@ async function removeFromFav(code) {
             }),
         })
         if (!response.ok) throw new Error("Failed to delete preference.");
+        // remove the deleted code from the list
         codeIds = codeIds.filter(id => id !== code);
         updateButtonUI(code);
     }

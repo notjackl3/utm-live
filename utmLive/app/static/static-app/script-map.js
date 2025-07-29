@@ -8,6 +8,8 @@ const card = document.getElementById("properties");
 
 // show popup cards of campus locations and their properties
 async function showCard(feature) {
+    console.log(feature.properties);
+
     card.innerHTML = "";
     const container = document.createElement("div");
     container.className = "map-overlay-inner";
@@ -220,9 +222,13 @@ map.on("style.load", async () => {
     if (!map.getSource("locations-source")) {
         map.addSource("locations-source", {
             type: "vector",
-            url: "mapbox://notjackl3.cmcvdx7l205vy1ppgk03k5ks9-9m35t"
+            url: "mapbox://notjackl3.cmcvdx7l205vy1ppgk03k5ks9-1urvz"
         });
     }
+
+    const source = map.getSource('locations-source');
+    console.log("source information");
+    console.log(source);
 
     await map.loadImage('/static/static-app/assets/location-fav.png', (error, image) => {
         if (error) throw error;
@@ -239,7 +245,7 @@ map.on("style.load", async () => {
                     id: MAIN_LAYER,
                     type: 'symbol',
                     source: 'locations-source',
-                    'source-layer': 'test',
+                    'source-layer': 'utm-buildings',
                     minzoom: 14,   
                     maxzoom: 22, 
                     layout: {
