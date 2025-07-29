@@ -8,8 +8,6 @@ const card = document.getElementById("properties");
 
 // show popup cards of campus locations and their properties
 async function showCard(feature) {
-    console.log(feature.properties);
-
     card.innerHTML = "";
     const container = document.createElement("div");
     container.className = "map-overlay-inner";
@@ -19,23 +17,25 @@ async function showCard(feature) {
     buttonWrapper.style.justifyContent = "end";
     buttonWrapper.setAttribute("data-code", feature.properties.code);
 
-    if (codeIds.includes(feature.properties.code)) {
-        const removeFavButton = document.createElement("button");
-        removeFavButton.classList.add("base-button", "fav-button");
-        removeFavButton.innerHTML = "remove from favourites";
-        removeFavButton.addEventListener("click", () => {
-            removeFromFav(feature.properties.code);
-        });
-        buttonWrapper.appendChild(removeFavButton);
-    }
-    else {
-        const favButton = document.createElement("button");
-        favButton.classList.add("base-button", "fav-button");
-        favButton.innerHTML = "add to favourites";
-        favButton.addEventListener("click", () => {
-            addToFav(feature.properties.code);
-        });
-        buttonWrapper.appendChild(favButton);
+    if (authenticated) {
+        if (codeIds.includes(feature.properties.code)) {
+            const removeFavButton = document.createElement("button");
+            removeFavButton.classList.add("base-button", "fav-button");
+            removeFavButton.innerHTML = "remove from favourites";
+            removeFavButton.addEventListener("click", () => {
+                removeFromFav(feature.properties.code);
+            });
+            buttonWrapper.appendChild(removeFavButton);
+        }
+        else {
+            const favButton = document.createElement("button");
+            favButton.classList.add("base-button", "fav-button");
+            favButton.innerHTML = "add to favourites";
+            favButton.addEventListener("click", () => {
+                addToFav(feature.properties.code);
+            });
+            buttonWrapper.appendChild(favButton);
+        }
     }
 
     const closeButton = document.createElement("button");
@@ -225,10 +225,6 @@ map.on("style.load", async () => {
             url: "mapbox://notjackl3.cmcvdx7l205vy1ppgk03k5ks9-1urvz"
         });
     }
-
-    const source = map.getSource('locations-source');
-    console.log("source information");
-    console.log(source);
 
     await map.loadImage('/static/static-app/assets/location-fav.png', (error, image) => {
         if (error) throw error;

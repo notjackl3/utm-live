@@ -13,12 +13,16 @@
 <body>
     <nav class="header">
         <div class="menu">
-            <a class="menu-item" href="#map">Map</a>
-            <a class="menu-item" href="#spots">Spots</a>
+            <a class="menu-item" href="/main/">Map</a>
+            <a class="menu-item" href="#undefined">Spots</a>
             {% if user.is_authenticated %}
-            <a class="menu-item" href="#" onclick="document.getElementById('logout-form').submit()"; return false;">Logout</a>
+            <a class="menu-item" href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
             <form id="logout-form" action="{% url 'logout_screen' %}" method="POST" style="display:none;">
                 {% csrf_token %}
+            </form>
+            {% else %}
+            <a class="menu-item" href="#" onclick="document.getElementById('login-form').submit(); return false;">Login</a>
+            <form id="login-form" action="{% url 'login-screen' %}" style="display:none;">
             </form>
             {% endif %}
         </div>
@@ -43,11 +47,17 @@
         <div class="map-overlay right" id="properties"></div>
     </div>
 
+    {% if user.is_authenticated %}
     {{ location_preferences | json_script:"location-data" }}
+    {% endif %}
     <script>
-        const locationData = JSON.parse(document.getElementById('location-data').textContent);
-        let codeIds = locationData.map(location => location.code_id);
-        console.log(codeIds);
+        let codeIds = [];
+        let authenticated = {{ user.is_authenticated | yesno:"true,false" }};
+        
+        if (authenticated) {
+            const locationData = JSON.parse(document.getElementById('location-data').textContent);
+            codeIds = locationData.map(location => location.code_id);
+        }
 
         mapboxgl.accessToken = "{{ mapbox_access_token }}";
         const OPENWEATHER_TOKEN = "{{ openweather_token }}"
