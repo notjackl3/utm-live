@@ -209,7 +209,7 @@
       "properties": {
         "name": "Forensic Anthropology Field School",
         "type": "campus building",
-        "tags": "forensic",
+        "tags": "forensic, criminology",
         "code": "c6"
       },
       "geometry": {
@@ -360,7 +360,7 @@
     {
       "type": "Feature",
       "properties": {
-        "name": " William G. Davis Building",
+        "name": "William G. Davis Building",
         "type": "academic building",
         "tags": "study, lecture, food",
         "code": "dv"

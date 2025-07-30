@@ -6,27 +6,53 @@ from django.contrib.auth.mixins import LoginRequiredMixin # remove authenticatio
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.views.generic.edit import CreateView
-from .models import Address, Location, Preference
+from django.views.generic import TemplateView
+from .models import Preference
+import geopandas
 import json
+from django.contrib.staticfiles.storage import staticfiles_storage
+
+def gdf_to_json(gdf):
+    features = []
+    for row in gdf.itertuples():
+        feature = {
+            "id": row.id,
+            "name": row.name,
+            "type": row.type,
+            "tags": row.tags,
+            "code": row.code,
+        }
+        features.append(feature)
+    return features
 
 def home(request):
     return render(request, "templates-app/index.html")
 
-class AddressView(CreateView):
-    model = Address
-    fields = ["address"]
-    template_name = "templates-app/index.html" 
-    success_url = "/"
+class MapView(TemplateView):
+    template_name = "templates-app/index.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated: 
-            locations = Preference.objects.all().filter(user=self.request.user)
-            context["location_preferences"] = list(locations.values())
         context["mapbox_access_token"] = settings.MAPBOX_TOKEN
         context["openweather_token"] = settings.OPENWEATHER_TOKEN
-        # context["addresses"] = Address.objects.all()
+        if self.request.user.is_authenticated:
+            locations = Preference.objects.filter(user=self.request.user)
+            context["location_preferences"] = list(locations.values())
+        return context
+
+class ListingView(TemplateView):
+    template_name = "templates-app/listing.html"
+
+    def get_context_data(self, **kwargs):
+        path = staticfiles_storage.path("static-app/utm-buildings.geojson")
+        gdf = geopandas.read_file(path)
+        locations = gdf_to_json(gdf)
+        
+        context = super().get_context_data(**kwargs)
+        context["locations"] = locations
+        if self.request.user.is_authenticated:
+            locations = Preference.objects.filter(user=self.request.user)
+            context["location_preferences"] = list(locations.values())
         return context
 
 class PreferenceView(APIView):

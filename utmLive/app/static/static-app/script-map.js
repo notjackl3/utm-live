@@ -221,8 +221,10 @@ map.on("style.load", async () => {
 
     if (!map.getSource("locations-source")) {
         map.addSource("locations-source", {
-            type: "vector",
-            url: "mapbox://notjackl3.cmcvdx7l205vy1ppgk03k5ks9-1urvz"
+            // type: "vector",
+            // url: "mapbox://notjackl3.cmcvdx7l205vy1ppgk03k5ks9-1urvz", this will reflect changes on mapbox, currently we use the local geojson data
+            type: "geojson",
+            data: GEOJSON_DATA_URL,
         });
     }
 
@@ -241,7 +243,7 @@ map.on("style.load", async () => {
                     id: MAIN_LAYER,
                     type: 'symbol',
                     source: 'locations-source',
-                    'source-layer': 'utm-buildings',
+                    // 'source-layer': 'utm-buildings', this is only used for vector tilesets
                     minzoom: 14,   
                     maxzoom: 22, 
                     layout: {

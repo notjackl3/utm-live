@@ -8,8 +8,6 @@ const card = document.getElementById("properties");
 
 // show popup cards of campus locations and their properties
 async function showCard(feature) {
-    console.log(feature.properties);
-
     card.innerHTML = "";
     const container = document.createElement("div");
     container.className = "map-overlay-inner";
@@ -19,23 +17,25 @@ async function showCard(feature) {
     buttonWrapper.style.justifyContent = "end";
     buttonWrapper.setAttribute("data-code", feature.properties.code);
 
-    if (codeIds.includes(feature.properties.code)) {
-        const removeFavButton = document.createElement("button");
-        removeFavButton.classList.add("base-button", "fav-button");
-        removeFavButton.innerHTML = "remove from favourites";
-        removeFavButton.addEventListener("click", () => {
-            removeFromFav(feature.properties.code);
-        });
-        buttonWrapper.appendChild(removeFavButton);
-    }
-    else {
-        const favButton = document.createElement("button");
-        favButton.classList.add("base-button", "fav-button");
-        favButton.innerHTML = "add to favourites";
-        favButton.addEventListener("click", () => {
-            addToFav(feature.properties.code);
-        });
-        buttonWrapper.appendChild(favButton);
+    if (authenticated) {
+        if (codeIds.includes(feature.properties.code)) {
+            const removeFavButton = document.createElement("button");
+            removeFavButton.classList.add("base-button", "fav-button");
+            removeFavButton.innerHTML = "remove from favourites";
+            removeFavButton.addEventListener("click", () => {
+                removeFromFav(feature.properties.code);
+            });
+            buttonWrapper.appendChild(removeFavButton);
+        }
+        else {
+            const favButton = document.createElement("button");
+            favButton.classList.add("base-button", "fav-button");
+            favButton.innerHTML = "add to favourites";
+            favButton.addEventListener("click", () => {
+                addToFav(feature.properties.code);
+            });
+            buttonWrapper.appendChild(favButton);
+        }
     }
 
     const closeButton = document.createElement("button");
@@ -221,14 +221,12 @@ map.on("style.load", async () => {
 
     if (!map.getSource("locations-source")) {
         map.addSource("locations-source", {
-            type: "vector",
-            url: "mapbox://notjackl3.cmcvdx7l205vy1ppgk03k5ks9-1urvz"
+            // type: "vector",
+            // url: "mapbox://notjackl3.cmcvdx7l205vy1ppgk03k5ks9-1urvz", this will reflect changes on mapbox, currently we use the local geojson data
+            type: "geojson",
+            data: GEOJSON_DATA_URL,
         });
     }
-
-    const source = map.getSource('locations-source');
-    console.log("source information");
-    console.log(source);
 
     await map.loadImage('/static/static-app/assets/location-fav.png', (error, image) => {
         if (error) throw error;
@@ -245,7 +243,7 @@ map.on("style.load", async () => {
                     id: MAIN_LAYER,
                     type: 'symbol',
                     source: 'locations-source',
-                    'source-layer': 'utm-buildings',
+                    // 'source-layer': 'utm-buildings', this is only used for vector tilesets
                     minzoom: 14,   
                     maxzoom: 22, 
                     layout: {

@@ -8,3 +8,4 @@ mapbox-tilesets
 dotenv
 psycopg
 python-dotenv
+geopandas
