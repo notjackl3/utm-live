@@ -68,7 +68,6 @@ async function drawRoute(coordinates1, coordinates2) {
             type: "geojson",
             data: routeGeoJSON
         });
-
         map.addLayer({
             id: "route-line",
             type: "line",
@@ -96,13 +95,13 @@ async function startRoute(feature) {
 
 function waitForFeatureClick() {
     return new Promise((resolve, reject) => {
-        // Temporary handler that only triggers once
+        // temporary handler that only triggers once
         const handler = async ({ feature }) => {
             if (!isSelecting) return;
             map.removeInteraction("temp-select");
             resolve(feature);
         };
-
+        // wait for the buildings layer to be clicked
         map.addInteraction("temp-select", {
             type: "click",
             target: { layerId: MAIN_LAYER },
@@ -114,7 +113,7 @@ function waitForFeatureClick() {
 async function selectLocation(choice) {
     isSelecting = true;
     hideCard();
-    
+    // hide information card and allows user to select a location 
     if (choice == "start") {
         try {
             const startFeature = await waitForFeatureClick();

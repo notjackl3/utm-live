@@ -51,3 +51,90 @@ function switchSnowRain() {
     changeSnowRainPreset(newSnowRain);
 }
 document.getElementById("weather-button").addEventListener("click", switchSnowRain);
+
+async function drawRoute(coordinates1, coordinates2) {
+    route = await checkRoute(coordinates1, coordinates2)
+
+    const routeGeoJSON = {
+        type: 'Feature',
+        geometry: route
+    };
+
+    if (map.getSource("route")) {
+        map.getSource("route").setData(routeGeoJSON);
+    } 
+    else {
+        map.addSource("route", {
+            type: "geojson",
+            data: routeGeoJSON
+        });
+
+        map.addLayer({
+            id: "route-line",
+            type: "line",
+            source: "route",
+            layout: {
+                "line-join": "round",
+                "line-cap": "round"
+            },
+            paint: {
+                "line-color": "#39FF14",
+                "line-width": 4,
+                "line-emissive-strength": 1
+            },
+        });
+    }
+
+}
+
+async function startRoute(feature) {
+    currentStartPoint = feature.geometry.coordinates;
+    currentStartLocation = feature.properties.name
+    await hideCard();
+    showRouteCard()
+}
+
+function waitForFeatureClick() {
+    return new Promise((resolve, reject) => {
+        // Temporary handler that only triggers once
+        const handler = async ({ feature }) => {
+            if (!isSelecting) return;
+            map.removeInteraction("temp-select");
+            resolve(feature);
+        };
+
+        map.addInteraction("temp-select", {
+            type: "click",
+            target: { layerId: MAIN_LAYER },
+            handler
+        });
+    });
+}
+
+async function selectLocation(choice) {
+    isSelecting = true;
+    hideCard();
+    
+    if (choice == "start") {
+        try {
+            const startFeature = await waitForFeatureClick();
+            isSelecting = false;
+            currentStartPoint = startFeature.geometry.coordinates;
+            currentStartLocation = startFeature.properties.name;
+            showRouteCard();
+        } catch (error) {
+            console.error("Feature selection canceled or failed", error);
+        }
+    }
+    else {
+        try {
+            const stopFeature = await waitForFeatureClick();
+            isSelecting = false;
+            currentStopPoint = stopFeature.geometry.coordinates;
+            currentStopLocation = stopFeature.properties.name;
+            showRouteCard();
+        } catch (error) {
+            console.error("Feature selection canceled or failed", error);
+        }
+    }
+}

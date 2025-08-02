@@ -180,3 +180,26 @@ async function checkWeather() {
         return null;
     }
 }
+
+
+async function checkRoute(coordinates1, coordinates2) {
+    try {
+        // Wait for the style to be loaded (if it isn’t already)
+        if (!map.isStyleLoaded()) {
+            await new Promise(resolve => {
+                map.once('style.load', resolve);
+            });
+        }
+
+        const response = await fetch(`https://api.mapbox.com/directions/v5/mapbox/walking/${coordinates1};${coordinates2}?geometries=geojson&access_token=${MAPBOX_TOKEN}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        const route = data.routes[0].geometry;
+        return route
+    } catch (error) {
+        console.error("Error fetching route data:", error);
+        return null;
+    }
+}

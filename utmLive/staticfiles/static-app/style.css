@@ -177,6 +177,13 @@ nav {
     justify-content: center;
 }
 
+.button-wrapper {
+    display: flex;
+    justify-content: end;
+    flex-wrap: wrap-reverse;
+    row-gap: 10px;
+}
+
 @media screen and (max-width: 820px) {
     .map-wrapper {
         flex-direction: column;
@@ -193,7 +200,7 @@ nav {
     }
   }
 
-  .base-button {
+.base-button {
     background-color: transparent;
     color: var(--main-color);
     border: 2px solid var(--main-color);
@@ -208,4 +215,15 @@ nav {
 .base-button:hover {
     background-color: var(--main-color);
     color: white;
+}
+
+.base-field {
+    width: 100%;
+    background-color: white;
+    color: var(--main-color);
+    border: 1px solid var(--main-color);
+    padding: 10px 10px;
+    margin-bottom: 15px;
+    font-size: medium;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
