@@ -5,17 +5,19 @@ let currentLightPreset = null;
 let currentSnowRainPreset = null;
 let currentStartPoint = null;
 let currentStopPoint = null;
+let currentStartLocation = null;
+let currentStopLocation = null;
+let isSelecting = false;
 const card = document.getElementById("properties");
 
 
 // show popup cards of campus locations and their properties
 function showCard(feature) {
-    const locationCoordinates = feature.geometry.coordinates;
     const OPHCoordinates = [-79.66589793562889, 43.54872793439594];
     const KNCoordinates = [-79.6631433069706, 43.548295871123116];
 
     // drawRoute(locationCoordinates, OPHCoordinates)
-    drawRoute(OPHCoordinates, KNCoordinates);
+    // drawRoute(OPHCoordinates, KNCoordinates);
 
     card.innerHTML = "";
     const container = document.createElement("div");
@@ -29,7 +31,7 @@ function showCard(feature) {
     directionButton.classList.add("base-button");
     directionButton.innerHTML = "get direction";
     directionButton.addEventListener("click", () => {
-        startRoute(feature.geometry.coordinates)
+        startRoute(feature)
     });
     buttonWrapper.appendChild(directionButton)
 
@@ -112,48 +114,77 @@ function hideCard() {
     map.resize();
 }
 
-function showRouteCard(coordinates1, coordinates2) {
+function showRouteCard() {    
     card.innerHTML = "";
     const container = document.createElement("div");
     container.className = "map-overlay-inner";
 
-    const buttonWrapper = document.createElement("div");
-    buttonWrapper.style.display = "flex";
-    buttonWrapper.style.flexDirection = "column";
-    buttonWrapper.style.justifyContent = "end";
-    buttonWrapper.setAttribute("data-start", coordinates1);
-    buttonWrapper.setAttribute("data-stop", coordinates2);
+    const routingWrapper = document.createElement("div");
+    routingWrapper.style.display = "flex";
+    routingWrapper.style.flexDirection = "column";
+    routingWrapper.style.justifyContent = "end";
+    routingWrapper.setAttribute("data-start", currentStartPoint);
+    routingWrapper.setAttribute("data-stop", currentStopPoint);
 
     const startLabel = document.createElement("h3");
     startLabel.textContent = "Start from";
     startLabel.style.color = "var(--main-color)"
     startLabel.style.marginTop = "3px";
-    buttonWrapper.appendChild(startLabel);
+    routingWrapper.appendChild(startLabel);
+
+    const location1Wrapper = document.createElement("div");
+    location1Wrapper.style.display = "flex";
 
     const location1Field = document.createElement("input");
     location1Field.type = "text";
     location1Field.placeholder = "Enter your starting point";
-    location1Field.value= "Hello";
+    location1Field.value= currentStartLocation;
     location1Field.classList.add("base-field");
-    buttonWrapper.appendChild(location1Field)
+    location1Wrapper.appendChild(location1Field)
+
+    const location1Button = document.createElement("button");
+    location1Button.classList.add("base-button");
+    location1Button.style.maxHeight = "40px";
+    location1Button.innerHTML = "select";
+    location1Wrapper.appendChild(location1Button)
+    location1Button.addEventListener("click", () => {
+        selectLocation("start");
+    });
+    routingWrapper.appendChild(location1Wrapper)
 
     const stopLabel = document.createElement("h3");
     stopLabel.textContent = "Stop at";
     stopLabel.style.color = "var(--main-color)"
     stopLabel.style.marginTop = "3px";
-    buttonWrapper.appendChild(stopLabel);
+    routingWrapper.appendChild(stopLabel);
+
+    const location2Wrapper = document.createElement("div");
+    location2Wrapper.style.display = "flex";
 
     const location2Field = document.createElement("input");
     location2Field.type = "text";
     location2Field.placeholder = "Enter your stopping point";
-    location2Field.value= "Hello";
+    location2Field.value= currentStopLocation;
     location2Field.classList.add("base-field");
-    buttonWrapper.appendChild(location2Field)
+    location2Wrapper.appendChild(location2Field)
 
-    container.appendChild(buttonWrapper);
+    const location2Button = document.createElement("button");
+    location2Button.classList.add("base-button");
+    location2Button.style.maxHeight = "40px";
+    location2Button.innerHTML = "select";
+    location2Button.addEventListener("click", () => {
+        selectLocation("stop");
+    });
+    location2Wrapper.appendChild(location2Button)
+
+    routingWrapper.appendChild(location2Wrapper)
+
+    container.appendChild(routingWrapper);
     card.appendChild(container);
     card.style.display = "block";
     map.resize();
+
+    drawRoute(currentStartPoint, currentStopPoint);
 }
 
 // set the map lighting
@@ -364,11 +395,13 @@ map.on("style.load", async () => {
         type: "click",
         target: { layerId: MAIN_LAYER },
         handler: async ({ feature }) => {
-            await showCard(feature);
-            map.resize();
-            map.flyTo({
-                center: feature.geometry.coordinates
-            });
+            if (!isSelecting) {
+                await showCard(feature);
+                map.resize();
+                map.flyTo({
+                    center: feature.geometry.coordinates
+                });
+            }
         }
     });
 

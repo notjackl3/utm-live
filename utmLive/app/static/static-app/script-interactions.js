@@ -87,9 +87,54 @@ async function drawRoute(coordinates1, coordinates2) {
 
 }
 
-async function startRoute(coordinates) {
-    currentStartPoint = coordinates;
-    console.log(currentStartPoint)
+async function startRoute(feature) {
+    currentStartPoint = feature.geometry.coordinates;
+    currentStartLocation = feature.properties.name
     await hideCard();
-    showRouteCard(currentStartPoint, currentStopPoint)
+    showRouteCard()
+}
+
+function waitForFeatureClick() {
+    return new Promise((resolve, reject) => {
+        // Temporary handler that only triggers once
+        const handler = async ({ feature }) => {
+            if (!isSelecting) return;
+            map.removeInteraction("temp-select");
+            resolve(feature);
+        };
+
+        map.addInteraction("temp-select", {
+            type: "click",
+            target: { layerId: MAIN_LAYER },
+            handler
+        });
+    });
+}
+
+async function selectLocation(choice) {
+    isSelecting = true;
+    hideCard();
+    
+    if (choice == "start") {
+        try {
+            const startFeature = await waitForFeatureClick();
+            isSelecting = false;
+            currentStartPoint = startFeature.geometry.coordinates;
+            currentStartLocation = startFeature.properties.name;
+            showRouteCard();
+        } catch (error) {
+            console.error("Feature selection canceled or failed", error);
+        }
+    }
+    else {
+        try {
+            const stopFeature = await waitForFeatureClick();
+            isSelecting = false;
+            currentStopPoint = stopFeature.geometry.coordinates;
+            currentStopLocation = stopFeature.properties.name;
+            showRouteCard();
+        } catch (error) {
+            console.error("Feature selection canceled or failed", error);
+        }
+    }
 }
