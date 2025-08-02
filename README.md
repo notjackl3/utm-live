@@ -3,6 +3,14 @@ This Django full-stack app is an interactive `3D map` of the `UTM campus`, highl
 
 *(I always love studying outside, anywhere besides home. Thus, I would love to know all of the nice study spots around my university campus. But there are so many of them! Therefore I decided to create this app to act as an interactive 3D map so that I can view all of them in one frame, plus some additional features!)*
 
+![alt text](demo-images/image-1.png)
+
+![alt text](demo-images/image-2.png)
+
+![alt text](demo-images/image-3.png)
+
+![alt text](demo-images/image-4.png)
+
 ## Features
 
 - Personalized map for UTM campus, with 3D environment and buildings.
@@ -23,14 +31,4 @@ All location metadata and spatial relationships are stored in a `postgresql` dat
 - Design custom 3D map using Mapbox.
 - Make models and datasets for all locations within the campus.
 - Define new user model with Django authentication system.
-
-![alt text](demo-images/image.png)
-
-![alt text](demo-images/image-3.png)
-
-![alt text](demo-images/image-4.png)
-
-![alt text](demo-images/image-1.png)
-
-![alt text](demo-images/image-2.png)
-
+- Integrate apis to check for weather, point of interests, and routes

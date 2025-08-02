@@ -119,6 +119,21 @@ function showRouteCard() {
     const container = document.createElement("div");
     container.className = "map-overlay-inner";
 
+    const buttonWrapper = document.createElement("div");
+    buttonWrapper.classList.add("button-wrapper");
+
+    const addLocationButton = document.createElement("button");
+    addLocationButton.classList.add("base-button", "close-button");
+    addLocationButton.innerHTML = "add stop";
+    addLocationButton.addEventListener("click", hideCard);
+    buttonWrapper.appendChild(addLocationButton)
+
+    const closeButton = document.createElement("button");
+    closeButton.classList.add("base-button", "close-button");
+    closeButton.innerHTML = "close";
+    closeButton.addEventListener("click", hideCard);
+    buttonWrapper.appendChild(closeButton)
+
     const routingWrapper = document.createElement("div");
     routingWrapper.style.display = "flex";
     routingWrapper.style.flexDirection = "column";
@@ -134,6 +149,8 @@ function showRouteCard() {
 
     const location1Wrapper = document.createElement("div");
     location1Wrapper.style.display = "flex";
+    location1Wrapper.classList.add("location-info")
+    location1Wrapper.style.marginBottom = "15px"
 
     const location1Field = document.createElement("input");
     location1Field.type = "text";
@@ -143,7 +160,7 @@ function showRouteCard() {
     location1Wrapper.appendChild(location1Field)
 
     const location1Button = document.createElement("button");
-    location1Button.classList.add("base-button");
+    location1Button.classList.add("base-button", "location-select-button");
     location1Button.style.maxHeight = "40px";
     location1Button.innerHTML = "select";
     location1Wrapper.appendChild(location1Button)
@@ -160,6 +177,8 @@ function showRouteCard() {
 
     const location2Wrapper = document.createElement("div");
     location2Wrapper.style.display = "flex";
+    location2Wrapper.classList.add("location-info")
+    location2Wrapper.style.marginBottom = "15px"
 
     const location2Field = document.createElement("input");
     location2Field.type = "text";
@@ -169,7 +188,7 @@ function showRouteCard() {
     location2Wrapper.appendChild(location2Field)
 
     const location2Button = document.createElement("button");
-    location2Button.classList.add("base-button");
+    location2Button.classList.add("base-button", "location-select-button");
     location2Button.style.maxHeight = "40px";
     location2Button.innerHTML = "select";
     location2Button.addEventListener("click", () => {
@@ -179,6 +198,7 @@ function showRouteCard() {
 
     routingWrapper.appendChild(location2Wrapper)
 
+    container.appendChild(buttonWrapper);
     container.appendChild(routingWrapper);
     card.appendChild(container);
     card.style.display = "block";
