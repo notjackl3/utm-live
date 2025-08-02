@@ -51,3 +51,45 @@ function switchSnowRain() {
     changeSnowRainPreset(newSnowRain);
 }
 document.getElementById("weather-button").addEventListener("click", switchSnowRain);
+
+async function drawRoute(coordinates1, coordinates2) {
+    route = await checkRoute(coordinates1, coordinates2)
+
+    const routeGeoJSON = {
+        type: 'Feature',
+        geometry: route
+    };
+
+    if (map.getSource("route")) {
+        map.getSource("route").setData(routeGeoJSON);
+    } 
+    else {
+        map.addSource("route", {
+            type: "geojson",
+            data: routeGeoJSON
+        });
+
+        map.addLayer({
+            id: "route-line",
+            type: "line",
+            source: "route",
+            layout: {
+                "line-join": "round",
+                "line-cap": "round"
+            },
+            paint: {
+                "line-color": "#39FF14",
+                "line-width": 4,
+                "line-emissive-strength": 1
+            },
+        });
+    }
+
+}
+
+async function startRoute(coordinates) {
+    currentStartPoint = coordinates;
+    console.log(currentStartPoint)
+    await hideCard();
+    showRouteCard(currentStartPoint, currentStopPoint)
+}

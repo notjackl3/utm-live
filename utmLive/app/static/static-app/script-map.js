@@ -3,19 +3,35 @@ const RAIN_CODES = [500, 501, 502, 503, 504, 520, 521, 522, 531];
 const SNOW_RAIN_CODES = [511, 615, 616];
 let currentLightPreset = null;
 let currentSnowRainPreset = null;
+let currentStartPoint = null;
+let currentStopPoint = null;
 const card = document.getElementById("properties");
 
 
 // show popup cards of campus locations and their properties
-async function showCard(feature) {
+function showCard(feature) {
+    const locationCoordinates = feature.geometry.coordinates;
+    const OPHCoordinates = [-79.66589793562889, 43.54872793439594];
+    const KNCoordinates = [-79.6631433069706, 43.548295871123116];
+
+    // drawRoute(locationCoordinates, OPHCoordinates)
+    drawRoute(OPHCoordinates, KNCoordinates);
+
     card.innerHTML = "";
     const container = document.createElement("div");
     container.className = "map-overlay-inner";
 
     const buttonWrapper = document.createElement("div");
-    buttonWrapper.style.display = "flex";
-    buttonWrapper.style.justifyContent = "end";
+    buttonWrapper.classList.add("button-wrapper");
     buttonWrapper.setAttribute("data-code", feature.properties.code);
+
+    const directionButton = document.createElement("button");
+    directionButton.classList.add("base-button");
+    directionButton.innerHTML = "get direction";
+    directionButton.addEventListener("click", () => {
+        startRoute(feature.geometry.coordinates)
+    });
+    buttonWrapper.appendChild(directionButton)
 
     if (authenticated) {
         if (codeIds.includes(feature.properties.code)) {
@@ -93,6 +109,50 @@ async function showCard(feature) {
 };
 function hideCard() {
     card.style.display = "none";
+    map.resize();
+}
+
+function showRouteCard(coordinates1, coordinates2) {
+    card.innerHTML = "";
+    const container = document.createElement("div");
+    container.className = "map-overlay-inner";
+
+    const buttonWrapper = document.createElement("div");
+    buttonWrapper.style.display = "flex";
+    buttonWrapper.style.flexDirection = "column";
+    buttonWrapper.style.justifyContent = "end";
+    buttonWrapper.setAttribute("data-start", coordinates1);
+    buttonWrapper.setAttribute("data-stop", coordinates2);
+
+    const startLabel = document.createElement("h3");
+    startLabel.textContent = "Start from";
+    startLabel.style.color = "var(--main-color)"
+    startLabel.style.marginTop = "3px";
+    buttonWrapper.appendChild(startLabel);
+
+    const location1Field = document.createElement("input");
+    location1Field.type = "text";
+    location1Field.placeholder = "Enter your starting point";
+    location1Field.value= "Hello";
+    location1Field.classList.add("base-field");
+    buttonWrapper.appendChild(location1Field)
+
+    const stopLabel = document.createElement("h3");
+    stopLabel.textContent = "Stop at";
+    stopLabel.style.color = "var(--main-color)"
+    stopLabel.style.marginTop = "3px";
+    buttonWrapper.appendChild(stopLabel);
+
+    const location2Field = document.createElement("input");
+    location2Field.type = "text";
+    location2Field.placeholder = "Enter your stopping point";
+    location2Field.value= "Hello";
+    location2Field.classList.add("base-field");
+    buttonWrapper.appendChild(location2Field)
+
+    container.appendChild(buttonWrapper);
+    card.appendChild(container);
+    card.style.display = "block";
     map.resize();
 }
 
@@ -311,6 +371,34 @@ map.on("style.load", async () => {
             });
         }
     });
+
+    // map.addSource('route', {
+    //     'type': 'geojson',
+    //     'data': {
+    //         'type': 'Feature',
+    //         'properties': {},
+    //         'geometry': {
+    //             'type': 'LineString',
+    //             'coordinates': [
+    //                 [-79.66589793562889, 43.54872793439594],
+    //                 [-79.6631433069706, 43.548295871123116]
+    //             ]
+    //         }
+    //     }
+    // });
+    // map.addLayer({
+    //     'id': 'route',
+    //     'type': 'line',
+    //     'source': 'route',
+    //     'layout': {
+    //         'line-join': 'round',
+    //         'line-cap': 'round'
+    //     },
+    //     'paint': {
+    //         'line-color': "#39FF14",
+    //         'line-width': 8
+    //     }
+    // });
 
     map.on("mouseenter", MAIN_LAYER, () => {
         map.getCanvas().style.cursor = "pointer";
