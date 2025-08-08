@@ -312,6 +312,7 @@ async function changeSnowRainPreset(inputSnowRain) {
 // initiate a new map
 const map = new mapboxgl.Map({
     style: 'mapbox://styles/mapbox/standard?optimize=true',
+    // style: 'mapbox://styles/mapbox/streets-v12',
     center: [-79.661979, 43.548187],
     zoom: 16.5,
     minZoom: 14.5,
@@ -328,8 +329,6 @@ const map = new mapboxgl.Map({
 });
 // wait for the map to load before adding sources and layers
 map.on("style.load", async () => {
-    let selectedFeature = null;
-
     if (!map.getSource("locations-source")) {
         map.addSource("locations-source", {
             // type: "vector",
@@ -338,6 +337,26 @@ map.on("style.load", async () => {
             data: GEOJSON_DATA_URL,
         });
     }
+
+    map.addSource('utm-buildings', {
+        type: 'vector',
+        url: 'mapbox://notjackl3.cmdu5rhkkcs091npcf42yg8so-7ubzj'
+        // type: "geojson",
+        // data: GEOJSON_BUILDINGS_DATA_URL,
+    });
+
+    // map.addLayer({
+    //     'id': 'utm-buildings-layer',
+    //     'type': 'fill-extrusion',
+    //     'source': 'utm-buildings',
+    //     // 'source-layer': "utm",
+    //     'paint': {
+    //         'fill-extrusion-color': '#aaa', 
+    //         'fill-extrusion-height': ['get', 'height'], 
+    //         // 'fill-extrusion-base': ['get', 'base_height_property'],
+    //         'fill-extrusion-opacity': 0.8
+    //     }
+    // });
 
     await map.loadImage('/static/static-app/assets/location-fav.png', (error, image) => {
         if (error) throw error;
@@ -409,7 +428,7 @@ map.on("style.load", async () => {
         });
     }
 
-    map.setTerrain({ "source": "mapbox-dem", "exaggeration": 7 });
+    map.setTerrain({ "source": "mapbox-dem", "exaggeration": 2 });
 
     map.addInteraction("click", {
         type: "click",
@@ -424,34 +443,6 @@ map.on("style.load", async () => {
             }
         }
     });
-
-    // map.addSource('route', {
-    //     'type': 'geojson',
-    //     'data': {
-    //         'type': 'Feature',
-    //         'properties': {},
-    //         'geometry': {
-    //             'type': 'LineString',
-    //             'coordinates': [
-    //                 [-79.66589793562889, 43.54872793439594],
-    //                 [-79.6631433069706, 43.548295871123116]
-    //             ]
-    //         }
-    //     }
-    // });
-    // map.addLayer({
-    //     'id': 'route',
-    //     'type': 'line',
-    //     'source': 'route',
-    //     'layout': {
-    //         'line-join': 'round',
-    //         'line-cap': 'round'
-    //     },
-    //     'paint': {
-    //         'line-color': "#39FF14",
-    //         'line-width': 8
-    //     }
-    // });
 
     map.on("mouseenter", MAIN_LAYER, () => {
         map.getCanvas().style.cursor = "pointer";

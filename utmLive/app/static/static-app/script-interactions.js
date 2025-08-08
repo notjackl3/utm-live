@@ -117,9 +117,9 @@ async function selectLocation(choice) {
     if (choice == "start") {
         try {
             const startFeature = await waitForFeatureClick();
-            isSelecting = false;
             currentStartPoint = startFeature.geometry.coordinates;
             currentStartLocation = startFeature.properties.name;
+            isSelecting = false;
             showRouteCard();
         } catch (error) {
             console.error("Feature selection canceled or failed", error);
@@ -128,12 +128,52 @@ async function selectLocation(choice) {
     else {
         try {
             const stopFeature = await waitForFeatureClick();
-            isSelecting = false;
             currentStopPoint = stopFeature.geometry.coordinates;
             currentStopLocation = stopFeature.properties.name;
+            isSelecting = false;
             showRouteCard();
         } catch (error) {
             console.error("Feature selection canceled or failed", error);
         }
     }
 }
+
+async function suggestLocation() {
+    isSelecting = true;
+    hideCard();
+    const clickHandler = async (event) => {
+        if (!isSelecting) return;
+        targetCoordinates = [event.lngLat.lng, event.lngLat.lat];
+        new mapboxgl.Marker()
+            .setLngLat(targetCoordinates)
+            .addTo(map);
+        map.off('click', clickHandler); // only one click allowed, then it disappears
+        isSelecting = false;
+        await sendSuggestion();
+    };
+
+    map.on('click', clickHandler);
+}
+
+async function sendSuggestion() {
+    accessToken = localStorage.getItem("access_token")
+    const response = await fetch("/main/suggestions/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`
+        },
+        credentials: "include",
+        body: JSON.stringify({
+            latlng: targetCoordinates
+        }),
+    });
+    if (response.status === 401) {
+        // in case that the user is not authorized, we need to refresh our access token and retry the function
+        return await refreshAccessTokenAndRetry(sendSuggestion);
+    }
+    if (!response.ok) {
+        throw new Error("Failed to suggest location.");
+    }
+}
+document.getElementById("suggest-location-button").addEventListener("click", suggestLocation);

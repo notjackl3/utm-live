@@ -1,3 +1,5 @@
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -85,7 +87,7 @@ function updateButtonUI(code) {
 
 async function refreshAccessToken() {
     currentRefreshToken = localStorage.getItem("refresh_token");
-    // try to retrieve a new access token when the old one expires
+    // get the refresh token to retrieve a new access token when the old one expires
     const response = await fetch("/api/token/refresh/", {
         method: "POST",
         headers: {
@@ -97,15 +99,40 @@ async function refreshAccessToken() {
         }),
     })
     if (response.ok) {
+        // if the refresh token is valid, then replace the current access token with a new one
         const data = await response.json()
         localStorage.setItem("access_token", data.access);
-        localStorage.setItem("refresh_token", data.refresh);
-        return data.access
+        // only replace the current refresh token if there is something in returned, because refresh tokens are long-lived and they are usually returned as null, so you dont want to set refresh token to null
+        if (data.refresh) {
+            localStorage.setItem("refresh_token", data.refresh);
+        }
     }
     else {
-        window.location.href = "/login";
-        return null;
+        // in case the refresh token is invalid, we try reauthenticate the user, then get their access and refresh token through the authentication endpoint
+        const response = await fetch("/api/user/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        })
+        if (response.ok) {
+            // if the user is reauthenticate successfully, then we reset the access token and refresh token
+            const data = await response.json();
+            localStorage.setItem("access_token", data.access);
+            localStorage.setItem("refresh_token", data.refresh);
+        } else {
+            // if the session expired, thus we cant reauthenticate the user then they have to log in again
+            alert("Session expired. Please log in again.");
+            window.location.href = "/login/";
+        }
     }
+}
+
+async function refreshAccessTokenAndRetry(callback) {
+    await refreshAccessToken();
+    // after resetting the access token using the refresh token, call the callback function again
+    return await callback();
 }
 
 

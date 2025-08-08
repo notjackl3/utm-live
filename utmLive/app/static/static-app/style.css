@@ -65,6 +65,7 @@ nav {
     height: calc(80vh - 40px); /* leave room for margin/padding if needed */
     width: calc(100% - 40px);
     margin: 20px;
+    margin-bottom: 10px;
     padding: 20px;
     background: #f8f8f8;
     gap: 20px; /* space between map and properties */
@@ -215,6 +216,10 @@ nav {
 .base-button:hover {
     background-color: var(--main-color);
     color: white;
+}
+
+.long-button {
+    padding: 10px 100px;
 }
 
 .base-field {

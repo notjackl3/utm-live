@@ -65,4 +65,13 @@ class UserAPI(APIView):
                 'refresh': str(refresh),
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        # reauthenticate the current user and try to retrieve their access token and refresh token
+        user = request.user
+        refresh = RefreshToken.for_user(user)
+        return JsonResponse({
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+        })
 

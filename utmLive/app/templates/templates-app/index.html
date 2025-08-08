@@ -47,6 +47,12 @@
         <div class="map-overlay right" id="properties"></div>
     </div>
 
+    <div class="buttons">
+        <div class="my-location-wrapper" style="margin-top: 0;">
+            <button id="suggest-location-button" class="base-button long-button"> Suggest location </button>
+        </div>
+    </div>
+
     {% if user.is_authenticated %}
     {{ location_preferences | json_script:"location-data" }}
     {% endif %}
@@ -65,6 +71,7 @@
         const MAIN_LAYER = "locations";
         const BASE_ASSETS_URL = "{% static 'static-app/assets/' %}";
         const GEOJSON_DATA_URL = "{% static 'static-app/utm-buildings.geojson' %}"
+        const GEOJSON_BUILDINGS_DATA_URL = "{% static 'static-app/utm-models.geojson' %}"
     </script>
     <script src="{% static 'static-app/script-utils.js' %}"></script>
     <script src="{% static 'static-app/script-map.js' %}"></script>

@@ -11,6 +11,7 @@ from .models import Preference
 import geopandas
 import json
 from django.contrib.staticfiles.storage import staticfiles_storage
+import geocoder
 
 def gdf_to_json(gdf):
     features = []
@@ -69,7 +70,6 @@ class PreferenceView(APIView):
     def delete(self, request):
         user = request.user
         data = json.loads(request.body)
-
         try:
             preference = Preference.objects.get(user=user, code_id=data.get("code"))
         except Preference.DoesNotExist:
@@ -77,4 +77,19 @@ class PreferenceView(APIView):
 
         preference.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class SuggestionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    # WAITING TO BE IMPLEMENTED
+    def post(self, request):
+        user = request.user 
+        print(request.data)
+        print(user)
+        # serializer = PreferenceSerializer(data=request.data)
+        # print(serializer)
+        
+        # g = geocoder.mapbox(latlng, method='reverse')
+        # print(g.json)
+        
         
