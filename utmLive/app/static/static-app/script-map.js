@@ -13,9 +13,6 @@ const card = document.getElementById("properties");
 
 // show popup cards of campus locations and their properties
 function showCard(feature) {
-    const OPHCoordinates = [-79.66589793562889, 43.54872793439594];
-    const KNCoordinates = [-79.6631433069706, 43.548295871123116];
-
     // drawRoute(locationCoordinates, OPHCoordinates)
     // drawRoute(OPHCoordinates, KNCoordinates);
 
@@ -89,6 +86,8 @@ function showCard(feature) {
 
     createFeature("name", feature.properties.name)
     createFeature("tags", feature.properties.tags)
+    createFeature("address", feature.properties.address)
+    console.log(feature.properties)
     const locationFile = `${feature.properties.code}.jpg`.toLowerCase();
     container.appendChild(list);
     card.appendChild(container);

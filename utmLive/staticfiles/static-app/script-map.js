@@ -13,9 +13,6 @@ const card = document.getElementById("properties");
 
 // show popup cards of campus locations and their properties
 function showCard(feature) {
-    const OPHCoordinates = [-79.66589793562889, 43.54872793439594];
-    const KNCoordinates = [-79.6631433069706, 43.548295871123116];
-
     // drawRoute(locationCoordinates, OPHCoordinates)
     // drawRoute(OPHCoordinates, KNCoordinates);
 
@@ -89,6 +86,8 @@ function showCard(feature) {
 
     createFeature("name", feature.properties.name)
     createFeature("tags", feature.properties.tags)
+    createFeature("address", feature.properties.address)
+    console.log(feature.properties)
     const locationFile = `${feature.properties.code}.jpg`.toLowerCase();
     container.appendChild(list);
     card.appendChild(container);
@@ -311,6 +310,7 @@ async function changeSnowRainPreset(inputSnowRain) {
 
 // initiate a new map
 const map = new mapboxgl.Map({
+    // this style will have 3d buildings by default
     style: 'mapbox://styles/mapbox/standard?optimize=true',
     // style: 'mapbox://styles/mapbox/streets-v12',
     center: [-79.661979, 43.548187],
@@ -345,13 +345,14 @@ map.on("style.load", async () => {
         // data: GEOJSON_BUILDINGS_DATA_URL,
     });
 
+    // add 3d buildings using geojson file above
     // map.addLayer({
     //     'id': 'utm-buildings-layer',
     //     'type': 'fill-extrusion',
     //     'source': 'utm-buildings',
     //     // 'source-layer': "utm",
     //     'paint': {
-    //         'fill-extrusion-color': '#aaa', 
+    //         'fill-extrusion-color': '#fff', 
     //         'fill-extrusion-height': ['get', 'height'], 
     //         // 'fill-extrusion-base': ['get', 'base_height_property'],
     //         'fill-extrusion-opacity': 0.8

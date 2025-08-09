@@ -28,7 +28,10 @@ class Location(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
-    tags = models.ManyToManyField(Tag, related_name='locations')
+    address = models.TextField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    tags = models.ManyToManyField(Tag, related_name="location")
 
     def __str__(self):
         return f"{self.name} ({self.code})"
@@ -41,3 +44,17 @@ class Preference(models.Model):
 
     class Meta:
         unique_together = ('user', 'code') 
+
+class Suggestion(models.Model):
+    # use settings.AUTH_USER_MODEL because it sets to whatever the new user model is
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="suggestions")
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=100)
+    address = models.TextField()
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+    status = models.CharField(max_length=50, default="pending")
+    tags = models.ManyToManyField(Tag, related_name="location_suggestion")
+
+    def __str__(self):
+        return f"Suggestion by {self.user.username}: {self.name}"

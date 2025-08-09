@@ -6,7 +6,8 @@
         "name": "Erindale Hall",
         "type": "student housing",
         "tags": "erindale",
-        "code": "r1"
+        "code": "r1",
+        "address": "1525 Outer Circle Building Number 325"
       },
       "geometry": {
         "coordinates": [
@@ -23,7 +24,8 @@
         "name": "Central Utilities Plant",
         "type": "campus building",
         "tags": "plant, utilities",
-        "code": "c3"
+        "code": "c3",
+        "address": "1630 Outer Circle Building Number 312"
       },
       "geometry": {
         "coordinates": [
@@ -40,7 +42,8 @@
         "name": "Instructional Centre",
         "type": "academic building",
         "tags": "study, lecture, food",
-        "code": "ib"
+        "code": "ib",
+        "address": "1599 Outer Circle Building Number 334"
       },
       "geometry": {
         "coordinates": [
@@ -57,7 +60,8 @@
         "name": "Grounds Building",
         "type": "campus building",
         "tags": "cleaning",
-        "code": "c7"
+        "code": "c7",
+        "address": "3255 Principal's Road Building Number 336"
       },
       "geometry": {
         "coordinates": [
@@ -74,7 +78,8 @@
         "name": "Leacock Lane",
         "type": "student housing",
         "tags": "leacock",
-        "code": "r2"
+        "code": "r2",
+        "address": "1900 Outer Circle Building Number 323"
       },
       "geometry": {
         "coordinates": [
@@ -91,7 +96,8 @@
         "name": "Recreation, Athletics and Wellness Centre",
         "type": "campus building",
         "tags": "gym, fitness",
-        "code": "rawc"
+        "code": "rawc",
+        "address": "1825 Outer Circle Building Number 332"
       },
       "geometry": {
         "coordinates": [
@@ -108,7 +114,8 @@
         "name": "Oscar Peterson Hall",
         "type": "student housing",
         "tags": "oph, colman ",
-        "code": "r5"
+        "code": "r5",
+        "address": "3375 Residence Rd, Mississauga, ON L5L 6A2, Canada"
       },
       "geometry": {
         "coordinates": [
@@ -125,7 +132,8 @@
         "name": "Terrence Donnelly Health Sciences Complex",
         "type": "academic building",
         "tags": "study, lecture, biology, chemistry, medicine",
-        "code": "hb"
+        "code": "hb",
+        "address": "1777 Outer Circle Building Number 333"
       },
       "geometry": {
         "coordinates": [
@@ -142,7 +150,8 @@
         "name": "Kaneff Centre",
         "type": "academic building",
         "tags": "study, lecture, office of registrar",
-        "code": "kn"
+        "code": "kn",
+        "address": "1833 Inner Circle (Shared with Innovation Complex) Building Number 314"
       },
       "geometry": {
         "coordinates": [
@@ -159,7 +168,8 @@
         "name": "Research Greenhouse",
         "type": "campus building",
         "tags": "research, greenhouse, environment",
-        "code": "c11"
+        "code": "c11",
+        "address": "1695 Outer Circle Road Building Number 338"
       },
       "geometry": {
         "coordinates": [
@@ -176,7 +186,8 @@
         "name": "Putnam Place",
         "type": "student housing",
         "tags": "putnam",
-        "code": "r6"
+        "code": "r6",
+        "address": "1930 1J7 Outer Cir, Mississauga, ON L5L 1C6, Canada"
       },
       "geometry": {
         "coordinates": [
@@ -193,7 +204,8 @@
         "name": "Schreiberwood",
         "type": "student housing",
         "tags": "schreiberwood ",
-        "code": "r8"
+        "code": "r8",
+        "address": "3400/3401 Residence Road Building Number 323(A-G)"
       },
       "geometry": {
         "coordinates": [
@@ -227,7 +239,8 @@
         "name": "Paleomagnetism Lab",
         "type": "campus building",
         "tags": "paleomagnetism, geography",
-        "code": "c9"
+        "code": "c9",
+        "address": "3275 Principal's Road Building Number 317"
       },
       "geometry": {
         "coordinates": [
@@ -244,7 +257,8 @@
         "name": "MaGrath Valley",
         "type": "student housing",
         "tags": "magrath",
-        "code": "r3"
+        "code": "r3",
+        "address": "1499 The Collegeway Building Number 323(T-Y)"
       },
       "geometry": {
         "coordinates": [
@@ -261,7 +275,8 @@
         "name": "Deerfield Hall",
         "type": "academic building",
         "tags": "study, office, mlc",
-        "code": "dh"
+        "code": "dh",
+        "address": "1535 Outer Circle Building Number 340"
       },
       "geometry": {
         "coordinates": [
@@ -278,7 +293,8 @@
         "name": "Maanjiwe Nendamowinan",
         "type": "academic building",
         "tags": "study, lecture",
-        "code": "mn"
+        "code": "mn",
+        "address": "1535 Outer Circle (Shared with Deerfield Hall) Building Number 341"
       },
       "geometry": {
         "coordinates": [
@@ -295,7 +311,8 @@
         "name": "Student Centre",
         "type": "campus building",
         "tags": "blind duck, utmsu",
-        "code": "c12"
+        "code": "c12",
+        "address": "1815 Inner Circle Building Number 328"
       },
       "geometry": {
         "coordinates": [
@@ -312,7 +329,8 @@
         "name": "McLuhan Court",
         "type": "student housing",
         "tags": "mcluhan",
-        "code": "r4"
+        "code": "r4",
+        "address": "3330 Residence Road Building Number 323(H-K)"
       },
       "geometry": {
         "coordinates": [
@@ -329,7 +347,8 @@
         "name": "New Science Building",
         "type": "academic building",
         "tags": "study, science",
-        "code": "sb"
+        "code": "sb",
+        "address": "1815 Outer Circle Building Number 339"
       },
       "geometry": {
         "coordinates": [
@@ -346,7 +365,8 @@
         "name": "Academic Annex",
         "type": "campus building",
         "tags": "unknown",
-        "code": "c1"
+        "code": "c1",
+        "address": "1795 Inner Circle Building Number 335"
       },
       "geometry": {
         "coordinates": [
@@ -360,10 +380,11 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "William G. Davis Building",
+        "name": " William G. Davis Building",
         "type": "academic building",
         "tags": "study, lecture, food",
-        "code": "dv"
+        "code": "dv",
+        "address": "1867 Inner Circle Building Number 313"
       },
       "geometry": {
         "coordinates": [
@@ -380,7 +401,8 @@
         "name": "Communication, Culture, & Technology Building",
         "type": "academic building",
         "tags": "study, lecture, booth",
-        "code": "cc"
+        "code": "cc",
+        "address": "1800 Middle Road Building Number 329"
       },
       "geometry": {
         "coordinates": [
@@ -397,7 +419,8 @@
         "name": "UTM Alumni House",
         "type": "campus building",
         "tags": "alumni",
-        "code": "c2"
+        "code": "c2",
+        "address": "1550 The Collegeway Building Number 330"
       },
       "geometry": {
         "coordinates": [
@@ -414,7 +437,8 @@
         "name": "Library",
         "type": "academic building",
         "tags": "study, book",
-        "code": "hm"
+        "code": "hm",
+        "address": "1675 Outer Circle Building Number 331"
       },
       "geometry": {
         "coordinates": [
@@ -431,7 +455,8 @@
         "name": "Erindale Studio Theatre",
         "type": "campus building",
         "tags": "erindale, theatre, arts",
-        "code": "c5"
+        "code": "c5",
+        "address": "1515 Outer Circle Building Number 316"
       },
       "geometry": {
         "coordinates": [
@@ -448,7 +473,8 @@
         "name": "Early Learning Child Care Centre",
         "type": "campus building",
         "tags": "child care",
-        "code": "c4"
+        "code": "c4",
+        "address": "Leacock Lane Residence 3359 Mississauga Road Mississauga, ON L5L 1C6"
       },
       "geometry": {
         "coordinates": [
@@ -465,7 +491,8 @@
         "name": "Roy Ivor Hall",
         "type": "student housing",
         "tags": "roy ivor",
-        "code": "r7"
+        "code": "r7",
+        "address": "3370 Residence Road Building Number 324"
       },
       "geometry": {
         "coordinates": [
@@ -482,7 +509,8 @@
         "name": "Lislehurst",
         "type": "campus building",
         "tags": "principal",
-        "code": "c8"
+        "code": "c8",
+        "address": "3369 Principal's Road Building Number 301"
       },
       "geometry": {
         "coordinates": [
