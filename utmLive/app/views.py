@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from django.conf import settings
-from .serializers import PreferenceSerializer
+from .serializers import PreferenceSerializer, SuggestionSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.mixins import LoginRequiredMixin # remove authentication needed for just the map
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.views.generic import TemplateView
-from .models import Preference
+from .models import Preference, Suggestion
 import geopandas
 import json
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -39,6 +39,8 @@ class MapView(TemplateView):
         if self.request.user.is_authenticated:
             locations = Preference.objects.filter(user=self.request.user)
             context["location_preferences"] = list(locations.values())
+            suggestions = Suggestion.objects.filter(user=self.request.user)
+            context["location_suggestions"] = list(suggestions.values())
         return context
 
 class ListingView(TemplateView):
@@ -84,8 +86,12 @@ class SuggestionView(APIView):
     # WAITING TO BE IMPLEMENTED
     def post(self, request):
         user = request.user 
-        print(request.data)
-        print(user)
+        data = json.loads(request.body)
+        serializer = SuggestionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # serializer = PreferenceSerializer(data=request.data)
         # print(serializer)
         

@@ -230,3 +230,105 @@ async function checkRoute(coordinates1, coordinates2) {
         return null;
     }
 }
+
+
+async function sendSuggestion() {
+    accessToken = localStorage.getItem("access_token");
+    console.log("sending suggestion")
+    const name = document.getElementById("location-suggestion-name").value;
+    const response = await fetch("/main/suggestions/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`
+        },
+        credentials: "include",
+        body: JSON.stringify({
+            name: name,
+            longitude: suggestedCoordinates[0],
+            latitude: suggestedCoordinates[1]
+        }),
+    });
+    if (response.status === 401) {
+        // in case that the user is not authorized, we need to refresh our access token and retry the function
+        return await refreshAccessTokenAndRetry(sendSuggestion);
+    }
+    if (!response.ok) {
+        throw new Error("Failed to suggest location.");
+    }
+}
+
+
+function addSuggestedLocation(name, longitude, latitude) {
+    const newFeature = {
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [longitude, latitude] },
+        properties: { name: name, type: 'suggestion' },
+        id: crypto.randomUUID()
+      };
+
+    userSuggestedFeatures.push(newFeature);
+    console.log(userSuggestedFeatures)
+
+    map.getSource('suggestions-source').setData({
+        type: "FeatureCollection",
+        features: userSuggestedFeatures,
+    });
+}
+
+
+async function addNewPointLayer(source, colour) {
+
+    await map.loadImage('/static/static-app/assets/location.png', (error, image) => {
+        if (error) throw error;
+        if (!map.hasImage('suggested-location-icon')) {
+            map.addImage('suggested-location-icon', image, { sdf: true });
+        }
+    });
+
+    if (!map.getLayer(`${source}-layer`)) {
+        map.addLayer({
+            id: `${source}-layer`,
+            type: 'symbol',
+            source: source,
+            minzoom: 14,
+            maxzoom: 22,
+            layout: {
+                'icon-image': 'suggested-location-icon',
+                'icon-size': ['interpolate', ['linear'], ['zoom'], 14, 0.01, 19, 0.2],
+                'icon-allow-overlap': true,
+                'icon-ignore-placement': true,
+                'text-field': ['get', 'name'],
+                'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+                'text-anchor': 'center',
+                'text-offset': ['interpolate', ['linear'], ['zoom'], 14, [0, 2], 19, [0, 5]],
+                'text-size': ['interpolate', ['linear'], ['zoom'], 14, 10, 19, 14],
+                'text-allow-overlap': true,
+                'text-ignore-placement': true
+            },
+            paint: {
+                'icon-color': colour,
+                'icon-opacity': 1,
+                'icon-occlusion-opacity': 1,
+                'icon-emissive-strength': 1,
+                "text-color": colour,
+                'text-opacity': ['interpolate', ['linear'], ['zoom'], 14.5, 0, 16.5, 1],
+                'text-occlusion-opacity': 1
+            }
+        });
+    }
+
+    map.addInteraction("click-suggestion", {
+        type: "click",
+        target: { layerId: `${source}-layer` },
+        handler: async ({ feature }) => {
+            if (!isSelecting) {
+                await showCard(feature);
+                map.resize();
+                map.flyTo({
+                    center: feature.geometry.coordinates
+                });
+            }
+        }
+    });
+}

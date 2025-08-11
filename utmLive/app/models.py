@@ -49,8 +49,6 @@ class Suggestion(models.Model):
     # use settings.AUTH_USER_MODEL because it sets to whatever the new user model is
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="suggestions")
     name = models.CharField(max_length=100)
-    type = models.CharField(max_length=100)
-    address = models.TextField()
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     status = models.CharField(max_length=50, default="pending")

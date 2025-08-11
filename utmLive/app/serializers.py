@@ -10,5 +10,5 @@ class PreferenceSerializer(serializers.ModelSerializer):
 class SuggestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Suggestion
-        fields = ["user", "code"]
+        fields = ["user", "name", "latitude", "longitude"]
         read_only_fields = ["user"]

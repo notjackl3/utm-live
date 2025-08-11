@@ -55,14 +55,18 @@
 
     {% if user.is_authenticated %}
     {{ location_preferences | json_script:"location-data" }}
+    {{ location_suggestions | json_script:"suggestion-data" }}
     {% endif %}
     <script>
         let codeIds = [];
+        let userSuggestedLocations = [];
+        let userSuggestedFeatures = [];
         let authenticated = {{ user.is_authenticated | yesno:"true,false" }};
         
         if (authenticated) {
             const locationData = JSON.parse(document.getElementById('location-data').textContent);
             codeIds = locationData.map(location => location.code_id);
+            userSuggestedLocations = JSON.parse(document.getElementById('suggestion-data').textContent);
         }
 
         mapboxgl.accessToken = "{{ mapbox_access_token }}";
