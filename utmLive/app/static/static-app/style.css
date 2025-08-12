@@ -248,3 +248,13 @@ nav {
     background-color: white;
     color: var(--main-color);
 }
+
+.marker {
+    background-image: url('/static/static-app/assets/location-suggested.png');
+    background-size: cover;
+    width: 100px;  
+    height: 100px; 
+    border-radius: 50%;
+    cursor: pointer;
+    transition: width 0.1s ease, height 0.1s ease;
+}

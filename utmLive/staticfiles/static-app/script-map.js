@@ -8,6 +8,7 @@ let currentStopPoint = null;
 let currentStartLocation = null;
 let currentStopLocation = null;
 let isSelecting = false;
+let suggestedCoordinates = [];
 const card = document.getElementById("properties");
 
 
@@ -66,8 +67,6 @@ function showCard(feature) {
     locationName.className = "location-name";
     container.appendChild(locationName);
 
-    const list = document.createElement("ul");
-
     function createFeature(key, value) {
         const locationKey = document.createElement("p");
         locationKey.className = "location-key";
@@ -87,9 +86,7 @@ function showCard(feature) {
     createFeature("name", feature.properties.name)
     createFeature("tags", feature.properties.tags)
     createFeature("address", feature.properties.address)
-    console.log(feature.properties)
     const locationFile = `${feature.properties.code}.jpg`.toLowerCase();
-    container.appendChild(list);
     card.appendChild(container);
 
     const locationImage = document.createElement("img");
@@ -171,7 +168,7 @@ function showRouteCard() {
     const stopLabel = document.createElement("h3");
     stopLabel.textContent = "Stop at";
     stopLabel.style.color = "var(--main-color)"
-    stopLabel.style.marginTop = "3px";
+    stopLabel.style.marginTop = "10px";
     routingWrapper.appendChild(stopLabel);
 
     const location2Wrapper = document.createElement("div");
@@ -204,6 +201,62 @@ function showRouteCard() {
     map.resize();
 
     drawRoute(currentStartPoint, currentStopPoint);
+}
+
+function showSuggestionCard() {    
+    card.innerHTML = "";
+    const container = document.createElement("div");
+    container.className = "map-overlay-inner";
+    container.style.height = "100%";
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+
+    const buttonWrapper = document.createElement("div");
+    buttonWrapper.classList.add("button-wrapper");
+
+    const closeButton = document.createElement("button");
+    closeButton.classList.add("base-button", "close-button");
+    closeButton.innerHTML = "close";
+    closeButton.addEventListener("click", hideCard);
+    buttonWrapper.appendChild(closeButton)
+
+    const informationTitle = document.createElement("p");
+    informationTitle.className = "location-key";
+    informationTitle.innerHTML = "<b>Name</b>";
+    
+    const informationField = document.createElement("input");
+    informationField.id = "location-suggestion-name"
+    informationField.type = "text";
+    informationField.placeholder = "New location's name";
+    informationField.classList.add("base-field");
+    
+    const locationInfo = document.createElement("div");
+    locationInfo.className = "location-info";
+    locationInfo.appendChild(informationTitle);
+    locationInfo.appendChild(informationField);
+
+    const buttonWrapper2 = document.createElement("div");
+    buttonWrapper2.classList.add("button-wrapper", "wrapper-bottom");
+    buttonWrapper2.style.marginTop = "20px";
+
+    buttonWrapper2.style.justifyContent = "center";
+
+    const submitButton = document.createElement("button");
+    submitButton.classList.add("base-button");
+    submitButton.style.width = "100%";
+    submitButton.innerHTML = "close";
+    submitButton.addEventListener("click", sendSuggestion);
+    buttonWrapper2.appendChild(submitButton)
+
+    container.appendChild(buttonWrapper);
+    container.appendChild(locationInfo);
+    container.appendChild(buttonWrapper2);
+    card.appendChild(container);
+    card.style.display = "block";
+
+    addNewPointLayer("temp-suggestions-source", "#fff")
+
+    map.resize();
 }
 
 // set the map lighting
@@ -345,6 +398,27 @@ map.on("style.load", async () => {
         // data: GEOJSON_BUILDINGS_DATA_URL,
     });
 
+    if (!map.getSource('temp-suggestions-source')) {
+        map.addSource('temp-suggestions-source', {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: []
+            }
+        });
+    }
+
+    if (!map.getSource('suggestions-source')) {
+        map.addSource('suggestions-source', {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: []
+            },
+            dynamic: true
+        });
+    }
+    
     // add 3d buildings using geojson file above
     // map.addLayer({
     //     'id': 'utm-buildings-layer',
@@ -364,39 +438,48 @@ map.on("style.load", async () => {
         map.addImage('location-fav-icon', image, { sdf: true });
     });
 
-    await map.loadImage('/static/static-app/assets/location.png', // load up custom icon images
-        (error, image) => {
-            if (error) throw error;
-            map.addImage('location-icon', image, { sdf: true }); // sdf to allow changing colors
-            
-            if (!map.getLayer(MAIN_LAYER)) {
-                map.addLayer({
-                    id: MAIN_LAYER,
-                    type: 'symbol',
-                    source: 'locations-source',
-                    // 'source-layer': 'utm-buildings', this is only used for vector tilesets
-                    minzoom: 14,   
-                    maxzoom: 22, 
-                    layout: {
-                        'icon-image': [
-                            'case',
-                            ['in', ['get', 'code'], ['literal', codeIds]], 'location-fav-icon',
-                            'location-icon'
-                        ],
-                        'icon-size': ['interpolate', ['linear'], ['zoom'], 14, 0.01, 19, 0.2],
-                        'icon-allow-overlap': true,
-                        'icon-ignore-placement': true,
-
-                        'text-field': ['get', 'name'],      
-                        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-                        'text-anchor': 'center',
-                        'text-offset': ['interpolate', ['linear'], ['zoom'], 14, ['literal', [0, 2]], 19, ['literal', [0, 5]] ],
-                        'text-size': ['interpolate', ['linear'], ['zoom'], 14, 10, 19, 14],
-                        'text-allow-overlap': true,
-                        'text-ignore-placement': true
-                    },
-                    paint: {
-                        'icon-color': [
+    async function setupMap() {
+        // Wrap loadImage in a Promise so you can await it
+        const image = await new Promise((resolve, reject) => {
+            map.loadImage('/static/static-app/assets/location.png', (error, image) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(image);
+                }
+            });
+        });
+    
+        // Add the image
+        map.addImage('location-icon', image, { sdf: true });
+    
+        // Add your layer
+        if (!map.getLayer(MAIN_LAYER)) {
+            await map.addLayer({
+                id: MAIN_LAYER,
+                type: 'symbol',
+                source: 'locations-source',
+                minzoom: 14,
+                maxzoom: 22,
+                layout: {
+                    'icon-image': [
+                        'case',
+                        ['in', ['get', 'code'], ['literal', codeIds]], 'location-fav-icon',
+                        'location-icon'
+                    ],
+                    'icon-size': ['interpolate', ['linear'], ['zoom'], 14, 0.01, 19, 0.2],
+                    'icon-allow-overlap': true,
+                    'icon-ignore-placement': true,
+                    'text-field': ['get', 'name'],
+                    'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+                    'text-anchor': 'center',
+                    'text-offset': ['interpolate', ['linear'], ['zoom'], 14, [0, 2], 19, [0, 5]],
+                    'text-size': ['interpolate', ['linear'], ['zoom'], 14, 10, 19, 14],
+                    'text-allow-overlap': true,
+                    'text-ignore-placement': true
+                },
+                paint: {
+                    'icon-color': [
                         'case',
                         ['in', ['get', 'code'], ['literal', codeIds]], '#f1c40f',
                         ['match', ['get', 'type'],
@@ -405,21 +488,29 @@ map.on("style.load", async () => {
                             'student building', '#2980b9',
                             '#888888'
                         ]
-                        ],
-                        'icon-opacity': 1,
-                        'icon-occlusion-opacity': 1,    
-                        'icon-emissive-strength': 1,    
-                                                
-                        'text-opacity': ['interpolate', ['linear'], ['zoom'], 14.5, 0, 16.5, 1],
-                        'text-occlusion-opacity': 1,
-                    }
-                });
-            }
-
-            changeLightPreset("auto (Mississauga)", "#fff");
-            changeSnowRainPreset("auto (Mississauga)");
+                    ],
+                    'icon-opacity': 1,
+                    'icon-occlusion-opacity': 1,
+                    'icon-emissive-strength': 1,
+                    'text-opacity': ['interpolate', ['linear'], ['zoom'], 14.5, 0, 16.5, 1],
+                    'text-occlusion-opacity': 1
+                }
+            });
         }
-    );
+    
+        // Add suggested locations one by one
+        for (const location of userSuggestedLocations) {
+            await addSuggestedLocation(location.name, location.longitude, location.latitude);
+        }
+
+        addNewPointLayer("suggestions-source", "#FF69B4")
+
+        changeLightPreset("auto (Mississauga)", "#fff");
+        changeSnowRainPreset("auto (Mississauga)");
+    }
+    
+    // Call the function
+    setupMap().catch(console.error);    
 
     if (!map.getSource("mapbox-dem")) {
         map.addSource("mapbox-dem", {

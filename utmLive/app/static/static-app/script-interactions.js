@@ -145,20 +145,21 @@ function suggestLocation() {
     const testFeatures = map.queryRenderedFeatures({
         layers: [MAIN_LAYER]
     });
-    console.log("Main layer:")
-    console.log(testFeatures);
 
     const clickHandler = async (event) => {
         if (!isSelecting) return;
         
         isSelecting = false;
         suggestedCoordinates = [event.lngLat.lng, event.lngLat.lat];
-        const marker = await new mapboxgl.Marker({
-            color: "#FF69B4",
-            draggable: true
-          })
+
+        const el = document.createElement('div');
+        el.className = 'marker'; 
+
+        const marker = await new mapboxgl.Marker(el)
           .setLngLat(suggestedCoordinates)
           .addTo(map);
+
+        allMarkers = document.querySelector('.marker');
 
         map.off('click', clickHandler); 
         showSuggestionCard();
@@ -166,7 +167,23 @@ function suggestLocation() {
             center: suggestedCoordinates
         });
     };
+    
+    map.on('zoom', () => {
+        const currentZoom = map.getZoom();
+        console.log('Current Zoom Level:', currentZoom);
+        updateMarkerSize(currentZoom);
+    });
 
     map.on('click', clickHandler);
 }
 document.getElementById("suggest-location-button").addEventListener("click", suggestLocation);
+
+
+let allMarkers = null;
+
+function updateMarkerSize(zoom) {
+    const marketSize = 100
+    const size = Math.min(marketSize, Math.max(10, (zoom - 14) / 5 * (marketSize - 10) + 10));
+    allMarkers.style.width = `${size}px`;
+    allMarkers.style.height = `${size}px`;
+}

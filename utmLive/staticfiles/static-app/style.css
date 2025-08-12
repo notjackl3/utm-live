@@ -146,6 +146,7 @@ nav {
     flex: 1;
     height: 100%;
     color: white;
+    align-content: center;
 }
 
 .location-value {
@@ -183,6 +184,12 @@ nav {
     justify-content: end;
     flex-wrap: wrap-reverse;
     row-gap: 10px;
+}
+
+.wrapper-bottom {
+    height: 100%;
+    justify-content: center;
+    align-items: end;
 }
 
 @media screen and (max-width: 820px) {
@@ -240,4 +247,13 @@ nav {
 .location-select-button:hover {
     background-color: white;
     color: var(--main-color);
+}
+
+.marker {
+    background-image: url('/static/static-app/assets/location-suggested.png');
+    background-size: cover;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
 }
