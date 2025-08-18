@@ -159,13 +159,31 @@ function suggestLocation() {
           .setLngLat(suggestedCoordinates)
           .addTo(map);
 
+        allMarkers = document.querySelector('.marker');
+
         map.off('click', clickHandler); 
         showSuggestionCard();
         map.flyTo({
             center: suggestedCoordinates
         });
     };
+    
+    map.on('zoom', () => {
+        const currentZoom = map.getZoom();
+        console.log('Current Zoom Level:', currentZoom);
+        updateMarkerSize(currentZoom);
+    });
 
     map.on('click', clickHandler);
 }
 document.getElementById("suggest-location-button").addEventListener("click", suggestLocation);
+
+
+let allMarkers = null;
+
+function updateMarkerSize(zoom) {
+    const marketSize = 100
+    const size = Math.min(marketSize, Math.max(10, (zoom - 14) / 5 * (marketSize - 10) + 10));
+    allMarkers.style.width = `${size}px`;
+    allMarkers.style.height = `${size}px`;
+}
